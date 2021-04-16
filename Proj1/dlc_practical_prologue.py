@@ -1,3 +1,11 @@
+######################################################################
+#
+# Source code from François Fleuret (EPFL)
+# Taken from: https://fleuret.org/dlc/src/dlc_practical_prologue.py
+#
+###################################################################### 
+
+
 import torch
 from torchvision import datasets
 
