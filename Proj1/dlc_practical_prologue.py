@@ -14,36 +14,38 @@ import os
 
 ######################################################################
 
-parser = argparse.ArgumentParser(description='DLC prologue file for practical sessions.')
+# TODO: @arnauddhaene find a way to fix the -h overwrite by argparse over click in test.py
 
-parser.add_argument('--full',
-                    action='store_true', default=False,
-                    help = 'Use the full set, can take ages (default False)')
+# parser = argparse.ArgumentParser(description='DLC prologue file for practical sessions.')
 
-parser.add_argument('--tiny',
-                    action='store_true', default=False,
-                    help = 'Use a very small set for quick checks (default False)')
+# parser.add_argument('--full',
+#                     action='store_true', default=False,
+#                     help = 'Use the full set, can take ages (default False)')
 
-parser.add_argument('--seed',
-                    type = int, default = 0,
-                    help = 'Random seed (default 0, < 0 is no seeding)')
+# parser.add_argument('--tiny',
+#                     action='store_true', default=False,
+#                     help = 'Use a very small set for quick checks (default False)')
 
-parser.add_argument('--cifar',
-                    action='store_true', default=False,
-                    help = 'Use the CIFAR data-set and not MNIST (default False)')
+# parser.add_argument('--seed',
+#                     type = int, default = 0,
+#                     help = 'Random seed (default 0, < 0 is no seeding)')
 
-parser.add_argument('--data_dir',
-                    type = str, default = None,
-                    help = 'Where are the PyTorch data located (default $PYTORCH_DATA_DIR or \'./data\')')
+# parser.add_argument('--cifar',
+#                     action='store_true', default=False,
+#                     help = 'Use the CIFAR data-set and not MNIST (default False)')
 
-# Timur's fix
-parser.add_argument('-f', '--file',
-                    help = 'quick hack for jupyter')
+# parser.add_argument('--data_dir',
+#                     type = str, default = None,
+#                     help = 'Where are the PyTorch data located (default $PYTORCH_DATA_DIR or \'./data\')')
 
-args = parser.parse_args()
+# # Timur's fix
+# parser.add_argument('-f', '--file',
+#                     help = 'quick hack for jupyter')
 
-if args.seed >= 0:
-    torch.manual_seed(args.seed)
+# args = parser.parse_args()
+
+# if args.seed >= 0:
+#     torch.manual_seed(args.seed)
 
 ######################################################################
 # The data
