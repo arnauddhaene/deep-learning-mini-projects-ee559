@@ -15,24 +15,17 @@ from metrics import evaluate_accuracy
 
 def run(epochs, lr, decay, verbose):
     
-    print('model init')
-    
     model = ConvNet()
     
     train_loader, test_loader = load_dataset()
-    
-    print('data fetched')
     
     metrics = train(model, train_loader, 
                     learning_rate=lr, weight_decay=decay, epochs=epochs,
                     verbose=verbose)
     
-    print('trained')
-    
     metrics.plot()
     
     print(f"Test accuracy {evaluate_accuracy(model, test_loader) * 100:06.3f}")
-
 
 if __name__ == '__main__':
     run()

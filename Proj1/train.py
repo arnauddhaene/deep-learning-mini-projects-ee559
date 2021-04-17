@@ -53,3 +53,5 @@ def train(
             
         metrics.add_entry(epoch, acc_loss, evaluate_accuracy(model, train_loader))
         if verbose > 0: print(metrics)
+        
+    return metrics
