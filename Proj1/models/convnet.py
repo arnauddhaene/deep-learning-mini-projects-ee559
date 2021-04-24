@@ -10,15 +10,14 @@ class ConvNet(nn.Module):
     
     def __init__(self):
         """Initialize Convolutional Neural Network"""
-        
+        # input : 2x14x14
         super().__init__()
-        # TODO: redefine this model @lacoupe
-        self.conv1 = nn.Conv2d(2, 24, kernel_size=3)
-        self.conv2 = nn.Conv2d(24, 49, kernel_size=3)
+    
+        self.conv1 = nn.Conv2d(2,  16, kernel_size=3) #16x(14-2)x(14-2) = 16x12x12
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3) #32x(12-2)x(12-2) = 32x10x10  => pooling = 32x5x5
         
-        self.fc1 = nn.Linear(196, 128)
-        self.fc2 = nn.Linear(128, 20)
-        self.fc3 = nn.Linear(20, 10)
+        self.fc1 = nn.Linear(32*5*5, 128)
+        self.fc2 = nn.Linear(128, 10)
         self.classifier = nn.Linear(10, 1)
         
         self.drop = nn.Dropout(0.2)
@@ -36,16 +35,15 @@ class ConvNet(nn.Module):
         Returns:
             [type]: [description]
         """
-        x = self.pool(self.relu(self.conv1(x)))
-        x = self.pool(self.relu(self.conv2(x)))
+        x = self.relu(self.conv1(x))
+
+        x = self.pool(self.relu(self.conv2(x))) 
         
         x = self.relu(self.fc1(x.flatten(start_dim=1)))
         x = self.drop(x)
         
         x = self.relu(self.fc2(x))
         x = self.drop(x)
-        
-        x = self.relu(self.fc3(x.flatten(start_dim=1)))
         
         x = self.sigmoid(self.classifier(x))
         
