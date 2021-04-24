@@ -27,7 +27,7 @@ class TrainingMetrics:
         3. print(metrics) to display current metrics
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize with empty attributes"""
         self.metrics = {}
         self.current = None
@@ -69,7 +69,7 @@ class TrainingMetrics:
         self.metrics[f"R{run}E{epoch}"] = \
             dict(epoch=epoch, loss=loss, accuracy=accuracy, run=run)
             
-    def plot(self):
+    def plot(self) -> None:
         """Plot metrics"""
         mf = pd.DataFrame.from_dict(self.metrics, orient='index')
         # mf['epoch'] = mf.index
@@ -87,6 +87,17 @@ class TrainingMetrics:
 
 
 class TestingMetrics():
+    """[summary]
+    
+    Attributes:
+        model (torch.nn.Module): model to evaluate
+        loader (torch.utils.data.DataLoader): data loader
+        confusion (dict): confusion matrix
+        accuracy (float): testing accuracy
+        precision (float): precision
+        recall (float): recall
+        f1_score (float): F1 score
+    """
     
     def __init__(self, model, data_loader):
         """
@@ -108,7 +119,8 @@ class TestingMetrics():
         
         self.compute()
                
-    def compute(self):
+    def compute(self) -> None:
+        """Compute different metrics by evaluating the model"""
         
         self.model.eval()
         
@@ -152,7 +164,8 @@ class TestingMetrics():
         return f"Acc. {self.accuracy * 100:06.3f} | Prec. {self.precision * 100:06.3f} | " \
             f"Rec. {self.accuracy * 100:06.3f} | F1 {self.f1_score * 100:06.3f}"
             
-    def plot(self):
+    def plot(self) -> None:
+        """Plotting function"""
         
         mf = pd.DataFrame(
             np.array(list(self.confusion.values())).reshape(2, 2)
@@ -164,6 +177,8 @@ class TestingMetrics():
         
         ax.set_xlabel('Predicted')
         ax.set_ylabel('Ground Truth')
+        
+        plt.show()
         
 
 def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
