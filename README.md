@@ -51,5 +51,5 @@ If you are using VSCode as an IDE, it is highly recommended to install the [corn
 | SURNAME Name         | SCIPER |
 | -------------------- | ------ |
 | DHAENE Arnaud        | 269883 |
-| COUPET Léopold       | |
+| COUPET Léopold       | 275387 |
 | PISAREWSKI Alexander | |
