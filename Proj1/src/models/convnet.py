@@ -3,14 +3,14 @@ from torch import nn
 
 class ConvNet(nn.Module):
     """
-    Convolutional Network Module 
+    Convolutional Network Module
 
     Attributes:
         conv1 (nn.Conv2d)     : fist convolutional layer
-        conv2 (nn.Conv2d)     : second convolutional layer 
-        fc1 (nn.Linear)       : first fully connected layer 
-        fc2 (nn.Linear)       : second fully connected layer 
-        classifier (nn.Linear): last fully connected layer 
+        conv2 (nn.Conv2d)     : second convolutional layer
+        fc1 (nn.Linear)       : first fully connected layer
+        fc2 (nn.Linear)       : second fully connected layer
+        classifier (nn.Linear): last fully connected layer
         drop (nn.Dropout)     : dropout function
         pool (nn.MaxPool2d)   : maxpool function
         relu (nn.Relu)        : relu activation function
@@ -22,11 +22,11 @@ class ConvNet(nn.Module):
         super().__init__()
     
         # convolutional layers
-        self.conv1 = nn.Conv2d(2,  32, kernel_size=3) # 16x(14-2)x(14-2) = 16x12x12 
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3) # 32x(12-2)x(12-2) = 32x10x10  (=> pooling = 32x5x5)
+        self.conv1 = nn.Conv2d(2, 32, kernel_size=3)   # 16x(14-2)x(14-2) = 16x12x12
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # 32x10x10  => pooling = 32x5x5
         
         # fully connected layers
-        self.fc1 = nn.Linear(64*5*5, 128)
+        self.fc1 = nn.Linear(64 * 5 * 5, 128)
         self.fc2 = nn.Linear(128, 10)
         self.classifier = nn.Linear(10, 1)
         
@@ -40,7 +40,7 @@ class ConvNet(nn.Module):
 
     def forward(self, x):
         """
-        Forward pass function 
+        Forward pass function
 
         Args:
             x [float32]: input images with dimension 2x14x14
