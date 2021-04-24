@@ -18,11 +18,10 @@ class ConvNet(nn.Module):
     
     def __init__(self):
         """Initialize Convolutional Neural Network"""
-        # input : 2x14x14
         super().__init__()
     
         # convolutional layers
-        self.conv1 = nn.Conv2d(2,  32, kernel_size=3) # 16x(14-2)x(14-2) = 16x12x12  (=> pooling = 16x6x6)
+        self.conv1 = nn.Conv2d(2,  32, kernel_size=3) # 16x(14-2)x(14-2) = 16x12x12 
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3) # 32x(12-2)x(12-2) = 32x10x10  (=> pooling = 32x5x5)
         
         # fully connected layers
