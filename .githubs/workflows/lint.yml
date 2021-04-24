@@ -1,0 +1,23 @@
+name: Flake8 Linter
+
+on:
+  push:
+    paths:
+      - "**.py"
+
+jobs:
+  lint:
+    name: Python Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Set up Python environment
+        with:
+          python-version: "3.8"
+      - name: flake8 lint
+        uses: py-actions/flake8@v1
+        with:
+          config: tox.ini
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
