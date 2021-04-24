@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
+import numpy as np
 import pandas as pd
 
 import matplotlib as mpl
@@ -85,15 +86,93 @@ class TrainingMetrics:
         plt.show()
 
 
+class TestingMetrics():
+    
+    def __init__(self, model, data_loader):
+        """
+        Initiate TestinMetrics instance.
+
+        Args:
+            model (nn.Module): model of interest with output (prediction, auxiliary)
+            data_loader (DataLoader): data loader with sample structure
+                that follows unpacking (input, target, classes)
+        """
+        self.model = model
+        self.loader = data_loader
+        self.confusion = dict(true_positive=0, false_negative=0,
+                              false_positive=0, true_negative=0)
+        self.accuracy = 0.
+        self.precision = 0.
+        self.recall = 0.
+        self.f1_score = 0.
+        
+        self.compute()
+               
+    def compute(self):
+        
+        self.model.eval()
+        
+        with torch.no_grad():
+            for (input, target, _) in self.loader:
+                output, _ = self.model(input)
+                
+                output = (output >= 0.5)
+                
+                for out, tar in zip(output, target):
+                
+                    tar = bool(tar)
+                    
+                    if out and tar:
+                        self.confusion['true_positive'] += 1
+                    elif not out and not tar:
+                        self.confusion['true_negative'] += 1
+                    elif out and not tar:
+                        self.confusion['false_positive'] += 1
+                    elif not out and tar:
+                        self.confusion['false_negative'] += 1
+        
+        self.accuracy = (self.confusion['true_positive'] + self.confusion['true_negative']) \
+            / sum(list(self.confusion.values()))
+        
+        self.precision = self.confusion['true_positive'] \
+            / (self.confusion['true_positive'] + self.confusion['false_positive'])
+            
+        self.recall = self.confusion['true_positive'] \
+            / (self.confusion['true_positive'] + self.confusion['false_negative'])
+            
+        self.f1_score = 2 * self.precision * self.recall / (self.precision + self.recall)
+        
+    def __str__(self) -> str:
+        """
+        Print method
+
+        Returns:
+            str: to print when `print(self)` is called
+        """
+        return f"Acc. {self.accuracy * 100:06.3f} | Prec. {self.precision * 100:06.3f} | " \
+            f"Rec. {self.accuracy * 100:06.3f} | F1 {self.f1_score * 100:06.3f}"
+            
+    def plot(self):
+        
+        mf = pd.DataFrame(
+            np.array(list(self.confusion.values())).reshape(2, 2)
+        )
+        
+        mf.columns, mf.index = ['True', 'False'], ['True', 'False']
+        
+        fig, ax = sns.heatmap(mf, annot=True, cmap='Blues')
+        
+        ax.set_xlabel('Predicted')
+        ax.set_ylabel('Ground Truth')
+        
+
 def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
     """
     Computes the classification accuracy of a model.
-
     Args:
         model (nn.Module): model of interest with output (prediction, auxiliary)
         loader (DataLoader): data loader with sample structure
             that follows unpacking (input, target, classes)
-
     Returns:
         float: classification accuracy
     """

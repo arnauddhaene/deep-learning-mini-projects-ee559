@@ -1,7 +1,7 @@
 import click
 
 from train import train
-from metrics import TrainingMetrics, evaluate_accuracy
+from metrics import TrainingMetrics, TestingMetrics
 from models.convnet import ConvNet
 from utils import load_dataset
 
@@ -27,7 +27,7 @@ def run(epochs, lr, decay, trials, verbose):
               metrics=metrics, run=trial,
               verbose=verbose)
 
-        print(f"Test accuracy {evaluate_accuracy(model, test_loader) * 100:06.3f}")
+        print(f"{trial:02} TEST METRICS \n{TestingMetrics(model, test_loader)}")
 
     metrics.plot()
 
