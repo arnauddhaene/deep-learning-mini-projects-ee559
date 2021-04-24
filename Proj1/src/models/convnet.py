@@ -1,5 +1,6 @@
 from torch import nn
 
+
 class ConvNet(nn.Module):
     """
     Convolutional Network Module 
