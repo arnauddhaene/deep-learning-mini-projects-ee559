@@ -11,7 +11,8 @@ from utils import load_dataset
 @click.option('--lr', default=1e-2, help="Learning rate.")
 @click.option('--decay', default=1e-3, help="Optimizer weight decay.")
 @click.option('--trials', default=1, help="Number of trials to run.")
-@click.option('--verbose', default=False, help="Print out info for debugging purposes.")
+@click.option('--verbose/--no-verbose', default=False, type=bool,
+              help="Print out info for debugging purposes.")
 def run(epochs, lr, decay, trials, verbose):
 
     train_loader, test_loader = load_dataset()
@@ -27,7 +28,7 @@ def run(epochs, lr, decay, trials, verbose):
               metrics=metrics, run=trial,
               verbose=verbose)
 
-        print(f"{trial:02} TEST METRICS \n{TestingMetrics(model, test_loader)}")
+        print(f"{trial:02} TEST METRICS \t {TestingMetrics(model, test_loader)}")
 
     metrics.plot()
 

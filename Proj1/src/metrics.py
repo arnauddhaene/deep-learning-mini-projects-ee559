@@ -49,7 +49,7 @@ class TrainingMetrics:
         Returns:
             str: to print when `print(self)` is called
         """
-        metric = self.metrics[f"R{self.run}E{self.epoch}"]
+        metric = self.metrics[f"R{self.run}E{self.current}"]
         return (f"Epoch {metric['epoch']:02} \t"
                 f"Loss {metric['loss']:07.3f} \t"
                 f"Accuracy {metric['accuracy'] * 100:06.3f}")
