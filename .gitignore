@@ -131,3 +131,7 @@ dmypy.json
 # data files
 Proj1/data/
 Proj2/data/
+
+# VSCode extensions
+.metals/
+.vscode/

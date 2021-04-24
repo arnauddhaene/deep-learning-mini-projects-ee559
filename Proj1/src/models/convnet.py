@@ -1,11 +1,12 @@
 from torch import nn
 
+
 class ConvNet(nn.Module):
     # TODO: finish the documentation for this class @lacoupe
     """[summary]
 
     Attributes:
-        conv1 (nn.Conv2d): 
+        conv1 (nn.Conv2d):
     """
     
     def __init__(self):
@@ -21,7 +22,7 @@ class ConvNet(nn.Module):
         self.classifier = nn.Linear(10, 1)
         
         self.drop = nn.Dropout(0.2)
-        self.pool = nn.MaxPool2d(2,2)
+        self.pool = nn.MaxPool2d(2, 2)
         
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()

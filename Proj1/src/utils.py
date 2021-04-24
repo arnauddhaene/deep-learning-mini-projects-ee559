@@ -5,9 +5,8 @@ from dlc_practical_prologue import generate_pair_sets
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 
-def standardized(t: torch.tensor, 
-                 mean: torch.tensor, std: torch.tensor
-) -> torch.tensor:
+
+def standardized(t: torch.tensor, mean: torch.tensor, std: torch.tensor) -> torch.tensor:
     """
     Standardize tensor following given mean and standard deviation
 
@@ -33,7 +32,7 @@ def load_dataset(
     * class of size [2]: digits in images (a, b)
 
     Args:
-        N (int, optional): Number of samples to fetch for each set. 
+        N (int, optional): Number of samples to fetch for each set.
             Defaults to 1000.
         batch_size (int, optional): Batch size for DataLoader. Defaults to 50.
 
