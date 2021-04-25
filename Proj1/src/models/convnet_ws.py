@@ -22,8 +22,8 @@ class ConvNet(nn.Module):
         super().__init__()
     
         # convolutional layers
-        self.conv1 = nn.Conv2d(2, 32, kernel_size=3)   # 32x(14-2)x(14-2) = 16x12x12
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # 64x10x10  => pooling = 64x5x5
+        self.conv1 = nn.Conv2d(2, 32, kernel_size=3)   # 16x(14-2)x(14-2) = 16x12x12
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # 32x10x10  => pooling = 32x5x5
         
         # fully connected layers
         self.fc1 = nn.Linear(64 * 5 * 5, 128)
@@ -43,10 +43,10 @@ class ConvNet(nn.Module):
         Forward pass function
 
         Args:
-            x [float32]: input images with dimension Nx2x14x14
+            x [float32]: input images with dimension 2x14x14
 
         Returns:
-            [float32]: predicted probability ]0,1[
+            [int]: Class to predict {0,1}
         """
 
         x = self.relu(self.conv1(x))
