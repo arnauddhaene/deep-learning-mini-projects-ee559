@@ -43,7 +43,7 @@ class ConvNet(nn.Module):
         Forward pass function
 
         Args:
-            x [float32]: input images with dimension Nx2x14x14
+            x [float32]: input images with dimension 50x2x14x14 (for a batch size of 50)
 
         Returns:
             [float32]: predicted probability ]0,1[
@@ -60,7 +60,10 @@ class ConvNet(nn.Module):
         
         x = self.relu(self.fc2(x))
         x = self.drop(x)
+
+        x = self.classifier(x)
+        print(x.type())
         
-        x = self.sigmoid(self.classifier(x))
+        x = self.sigmoid(x)
         
         return x.squeeze(), None
