@@ -37,8 +37,8 @@ More information can be found in the projects' respective `README.md` files.
 
 The project follows flake8 practices, with the exception of:
 
-* [E501 - Line too long] We use a maximum line length of 100
-* [W293 - Blank line contains whitespace]
+* W293 - Blank line contains whitespace [Removed]
+* E501 - Line too long [Modified: We use a maximum line length of 100]
 
 Furthermore, we don't lint Prof. Fleuret's [prologue file](Proj1/src/dlc_practical_prologue.py) as he consistently violates rule E251.
 

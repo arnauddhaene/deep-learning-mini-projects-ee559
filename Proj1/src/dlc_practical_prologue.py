@@ -45,7 +45,8 @@ import os
 # args = parser.parse_args()
 
 # Instantiate Namespace with defaults
-args = argparse.Namespace(full=False, tiny=False, seed=0, cifar=False, data_dir=None)
+data_dir = os.path.abspath(os.path.join(os.path.dirname, os.pardir))
+args = argparse.Namespace(full=False, tiny=False, seed=0, cifar=False, data_dir=data_dir)
 
 if args.seed >= 0:
     torch.manual_seed(args.seed)

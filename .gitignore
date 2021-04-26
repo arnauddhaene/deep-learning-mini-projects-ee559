@@ -131,7 +131,12 @@ dmypy.json
 # data files
 Proj1/data/
 Proj2/data/
+Proj1/src/data/
+Proj2/src/data/
 
 # VSCode extensions
 .metals/
 .vscode/
+
+# DS Store
+.DS_Store
