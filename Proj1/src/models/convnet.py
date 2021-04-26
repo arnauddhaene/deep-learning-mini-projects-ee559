@@ -62,7 +62,6 @@ class ConvNet(nn.Module):
         x = self.drop(x)
 
         x = self.classifier(x)
-        print(x.type())
         
         x = self.sigmoid(x)
         

@@ -45,7 +45,7 @@ import os
 # args = parser.parse_args()
 
 # Instantiate Namespace with defaults
-data_dir = os.path.abspath(os.path.join(os.path.dirname, os.pardir))
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
 args = argparse.Namespace(full=False, tiny=False, seed=0, cifar=False, data_dir=data_dir)
 
 if args.seed >= 0:

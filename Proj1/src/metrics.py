@@ -2,6 +2,9 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
+import os
+import datetime as dt
+
 import numpy as np
 import pandas as pd
 
@@ -10,6 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 mpl.rcParams['figure.figsize'] = [8.3, 5.1]
+FIGURE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'figures')
 
 
 class TrainingMetrics:
@@ -73,19 +77,29 @@ class TrainingMetrics:
         """Plot metrics"""
         mf = pd.DataFrame.from_dict(self.metrics, orient='index')
         # mf['epoch'] = mf.index
+        fig = plt.figure()
         
-        ax_loss = sns.lineplot(data=mf, x="epoch", y="loss", label='loss',
+        ax_loss = fig.add_subplot(111)
+        
+        ax_loss = sns.lineplot(data=mf, x="epoch", y="loss", label='loss', legend=False,
                                estimator='mean', ci='sd')
 
         ax_acc = ax_loss.twinx()
 
-        sns.lineplot(data=mf, x="epoch", y="accuracy", label='accuracy',
+        sns.lineplot(data=mf, x="epoch", y="accuracy", label='accuracy', legend=False,
                      color='r', ax=ax_acc,
                      estimator='mean', ci='sd')
+        
+        fig.legend(loc="upper center", bbox_to_anchor=(0.5, 1),
+                   bbox_transform=ax_loss.transAxes, ncol=2)
 
-        plt.show()
+        plt.suptitle("Training loss and accuracy")
+
+        plt.savefig(os.path.join(FIGURE_DIR,
+                                 f"TRAINING_METRICS_{dt.datetime.today()}.png"))
 
 
+# TODO: @arnauddhaene generalize this to trials in order to get information about multiple tests
 class TestingMetrics():
     """[summary]
     
@@ -173,12 +187,14 @@ class TestingMetrics():
         
         mf.columns, mf.index = ['True', 'False'], ['True', 'False']
         
-        fig, ax = sns.heatmap(mf, annot=True, cmap='Blues')
+        fig, ax = plt.subplots()
+        
+        sns.heatmap(mf, annot=True, cmap='Blues', fmt='d', ax=ax)
         
         ax.set_xlabel('Predicted')
         ax.set_ylabel('Ground Truth')
         
-        plt.show()
+        plt.savefig(os.path.join(FIGURE_DIR, f"TESTING_METRICS_{dt.datetime.today()}.png"))
         
 
 def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:

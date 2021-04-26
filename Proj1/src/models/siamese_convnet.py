@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 
-class ConvNet_ws(nn.Module):
+class SiameseConvNet(nn.Module):
     """
     Siamese Convolutional Network Module
 
@@ -46,11 +46,13 @@ class ConvNet_ws(nn.Module):
         Forward pass function used in the sub-network
 
         Args:
-            x [float32]: input image with dimension 50x1x14x14 (for a batch size of 50)
+            x [float32]: input image with dimension Bx1x14x14 (for batch size B)
 
         Returns:
-            [float32]: non activated tensor of dimension 50x1
+            [float32]: non activated tensor of dimension Bx1
         """
+        # TODO: @lacoupe as mentioned below, the output of `forward_once` should be Bx1x10
+        #       in order to adhere to auxiliary loss criterion in the training method
 
         x = self.relu(self.conv1(x))
         x = self.drop(x)
@@ -73,15 +75,23 @@ class ConvNet_ws(nn.Module):
         Forward pass function for the global siamese CNN
 
         Args:
-            x [float32]: input images with dimension 50x2x14x14 (for a batch size of 50)
+            x [float32]: input images with dimension Bx2x14x14 (for batch size B)
 
         Returns:
             [int]: predicted probability ]0,1[
         """
         input1 = x[:, 0, :, :].view(-1, 1, 14, 14)
         input2 = x[:, 1, :, :].view(-1, 1, 14, 14)
+        
         x1 = self.forward_once(input1)
         x2 = self.forward_once(input2)
+        
+        # TODO: @lacoupe add this to get the auxiliary losses
+        # They must each (x1 and x2) be formatted as Bx1x10 to work in the training method
+        
+        # auxiliary = torch.stack((x1, x2), 1)
+        
         output = torch.cat((x1, x2), 1)
         output = self.sigmoid(self.classifier(output))
+        
         return output.squeeze(), None

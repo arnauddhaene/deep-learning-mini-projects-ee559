@@ -31,6 +31,7 @@ def train(
     """
 
     criterion = nn.BCELoss()
+    aux_criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(
         model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
@@ -42,14 +43,24 @@ def train(
         
         for input, target, classes in train_loader:
             
-            # TODO: incorporate auxiliary loss with second param
-            output, _ = model(input)
+            output, auxiliary = model(input)
             loss = criterion(output, target.float())
             
-            acc_loss += loss.item()
+            aux_loss = 0.
+            
+            if auxiliary is not None:
+                auxiliary_1, auxiliary_2 = auxiliary.unbind(1)
+                target_class_1, target_class_2 = classes.unbind(1)
+                
+                aux_loss = aux_criterion(auxiliary_1, target_class_1) + \
+                    aux_criterion(auxiliary_2, target_class_2)
+            
+            # TODO: @arnauddhaene make this 0.5 parameter tunable in test script
+            combined_loss = loss + 0.5 * aux_loss
+            acc_loss += combined_loss.item()
             
             optimizer.zero_grad()
-            loss.backward()
+            combined_loss.backward()
             optimizer.step()
             
         metrics.add_entry(epoch, acc_loss, evaluate_accuracy(model, train_loader), run)
