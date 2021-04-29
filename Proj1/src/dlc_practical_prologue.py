@@ -14,35 +14,39 @@ import os
 
 ######################################################################
 
-# TODO: @arnauddhaene find a way to fix the -h overwrite by argparse over click in test.py
+# Silenced Prof. Fleuret's Parser to not incur errors when running `test.py`
 
-parser = argparse.ArgumentParser(description='DLC prologue file for practical sessions.')
+# parser = argparse.ArgumentParser(description='DLC prologue file for practical sessions.')
 
-parser.add_argument('--full',
-                    action='store_true', default=False,
-                    help = 'Use the full set, can take ages (default False)')
+# parser.add_argument('--full',
+#                     action='store_true', default=False,
+#                     help = 'Use the full set, can take ages (default False)')
 
-parser.add_argument('--tiny',
-                    action='store_true', default=False,
-                    help = 'Use a very small set for quick checks (default False)')
+# parser.add_argument('--tiny',
+#                     action='store_true', default=False,
+#                     help = 'Use a very small set for quick checks (default False)')
 
-parser.add_argument('--seed',
-                    type = int, default = 0,
-                    help = 'Random seed (default 0, < 0 is no seeding)')
+# parser.add_argument('--seed',
+#                     type = int, default = 0,
+#                     help = 'Random seed (default 0, < 0 is no seeding)')
 
-parser.add_argument('--cifar',
-                    action='store_true', default=False,
-                    help = 'Use the CIFAR data-set and not MNIST (default False)')
+# parser.add_argument('--cifar',
+#                     action='store_true', default=False,
+#                     help = 'Use the CIFAR data-set and not MNIST (default False)')
 
-parser.add_argument('--data_dir',
-                    type = str, default = None,
-                    help = 'Where are the PyTorch data located (default $PYTORCH_DATA_DIR or \'./data\')')
+# parser.add_argument('--data_dir',
+#                     type = str, default = None,
+#                     help = 'Where are the PyTorch data located (default $PYTORCH_DATA_DIR or \'./data\')')
 
-# Timur's fix
-parser.add_argument('-f', '--file',
-                    help = 'quick hack for jupyter')
+# # Timur's fix
+# parser.add_argument('-f', '--file',
+#                     help = 'quick hack for jupyter')
 
-args = parser.parse_args()
+# args = parser.parse_args()
+
+# Instantiate Namespace with defaults
+data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
+args = argparse.Namespace(full=False, tiny=False, seed=0, cifar=False, data_dir=data_dir)
 
 if args.seed >= 0:
     torch.manual_seed(args.seed)
@@ -50,10 +54,12 @@ if args.seed >= 0:
 ######################################################################
 # The data
 
+
 def convert_to_one_hot_labels(input, target):
     tmp = input.new_zeros(target.size(0), target.max() + 1)
     tmp.scatter_(1, target.view(-1, 1), 1.0)
     return tmp
+
 
 def load_data(cifar = None, one_hot_labels = False, normalize = False, flatten = True):
 
