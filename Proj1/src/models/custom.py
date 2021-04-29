@@ -8,7 +8,7 @@ class SizeableModule(nn.Module):
         super().__init__()
         
     def forward(self, x: torch.tensor) -> torch.tensor:
-        pass
+        raise NotImplementedError
     
     def param_count(self) -> int:
         """Parameter counter"""
@@ -21,7 +21,7 @@ class NamedModule(nn.Module):
         super().__init__()
         
     def forward(self, x: torch.tensor) -> torch.tensor:
-        pass
+        raise NotImplementedError
     
     def __str__(self):
-        pass
+        raise NotImplementedError
