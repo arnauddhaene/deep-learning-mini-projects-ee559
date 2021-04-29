@@ -1,5 +1,8 @@
+import os
 import click
+import datetime as dt
 
+import metrics
 from metrics import TrainingMetrics, TestingMetrics
 from models.convnet import ConvNet
 from models.siamese_convnet import SiameseConvNet
@@ -22,10 +25,19 @@ from utils import load_dataset
               help="Optimizer weight decay.")
 @click.option('--trials', default=1,
               help="Number of trials to run.")
+@click.option('--clear-figs/--keep-figs', default=False, type=bool,
+              help="Clear the figures directory of all its contents.")
 @click.option('--verbose/--no-verbose', default=False, type=bool,
               help="Print out info for debugging purposes.")
-def run(model, siamese, epochs, lr, decay, trials, verbose):
-
+def run(model, siamese, epochs, lr, decay, trials, clear_figs, verbose):
+    
+    # Clear figures directory
+    if clear_figs:
+        metrics.clear_figures()
+    # Create figures subdirectory for current run
+    timestamp = str(dt.datetime.today())
+    os.makedirs(os.path.join(metrics.FIGURE_DIR, timestamp))
+    
     train_loader, test_loader = load_dataset()
 
     train_metrics = TrainingMetrics()
@@ -45,9 +57,9 @@ def run(model, siamese, epochs, lr, decay, trials, verbose):
         # model.train(False) # TEST @lacoupe
         test_metrics = TestingMetrics(model, test_loader)
         print(f"{trial:02} TEST METRICS \t {test_metrics}")
-        test_metrics.plot()
+        test_metrics.plot(timestamp)
 
-    train_metrics.plot()
+    train_metrics.plot(timestamp)
 
 
 if __name__ == '__main__':

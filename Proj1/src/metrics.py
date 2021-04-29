@@ -3,6 +3,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 import os
+import shutil
 import datetime as dt
 
 import numpy as np
@@ -14,6 +15,46 @@ import seaborn as sns
 
 mpl.rcParams['figure.figsize'] = [8.3, 5.1]
 FIGURE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'figures')
+
+if not os.path.exists(FIGURE_DIR):
+    os.makedirs(FIGURE_DIR)
+
+
+def clear_figures() -> None:
+    """Clear figures directory and all subdirectories"""
+    
+    for filename in os.listdir(FIGURE_DIR):
+        filepath = os.path.join(FIGURE_DIR, filename)
+        try:
+            shutil.rmtree(filepath)
+        except OSError:
+            os.remove(filepath)
+    
+
+def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
+    """
+    Computes the classification accuracy of a model.
+    Args:
+        model (nn.Module): model of interest with output (prediction, auxiliary)
+        loader (DataLoader): data loader with sample structure
+            that follows unpacking (input, target, classes)
+    Returns:
+        float: classification accuracy
+    """
+    
+    accuracy = 0.
+    counter = 0
+    
+    model.eval()
+    
+    with torch.no_grad():
+        for (input, target, _) in loader:
+            output, _ = model(input)
+            
+            accuracy += (output >= 0.5) == target
+            counter += target.size(0)
+                
+    return (accuracy.sum() / counter).float().item()
 
 
 class TrainingMetrics:
@@ -73,8 +114,12 @@ class TrainingMetrics:
         self.metrics[f"R{run}E{epoch}"] = \
             dict(epoch=epoch, loss=loss, accuracy=accuracy, run=run)
             
-    def plot(self) -> None:
-        """Plot metrics"""
+    def plot(self, directory: str) -> None:
+        """Plot metrics
+
+        Args:
+            directory (str): sub-directory to save the plots in
+        """
         mf = pd.DataFrame.from_dict(self.metrics, orient='index')
         # mf['epoch'] = mf.index
         fig = plt.figure()
@@ -94,8 +139,10 @@ class TrainingMetrics:
                    bbox_transform=ax_loss.transAxes, ncol=2)
 
         plt.suptitle("Training loss and accuracy")
+        
+        directory = os.path.join(FIGURE_DIR, directory)
 
-        plt.savefig(os.path.join(FIGURE_DIR,
+        plt.savefig(os.path.join(directory,
                                  f"TRAINING_METRICS_{dt.datetime.today()}.png"))
 
 
@@ -180,8 +227,12 @@ class TestingMetrics():
         return f"Acc. {self.accuracy * 100:06.3f} | Prec. {self.precision * 100:06.3f} | " \
             f"Rec. {self.accuracy * 100:06.3f} | F1 {self.f1_score * 100:06.3f}"
             
-    def plot(self) -> None:
-        """Plotting function"""
+    def plot(self, directory: str) -> None:
+        """Plot metrics
+
+        Args:
+            directory (str): sub-directory to save the plots in
+        """
         
         mf = pd.DataFrame(
             np.array(list(self.confusion.values())).reshape(2, 2)
@@ -196,30 +247,9 @@ class TestingMetrics():
         ax.set_xlabel('Predicted')
         ax.set_ylabel('Ground Truth')
         
-        plt.savefig(os.path.join(FIGURE_DIR, f"TESTING_METRICS_{dt.datetime.today()}.png"))
+        plt.suptitle('Testing metrics: ' + self.__str__())
         
+        directory = os.path.join(FIGURE_DIR, directory)
 
-def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
-    """
-    Computes the classification accuracy of a model.
-    Args:
-        model (nn.Module): model of interest with output (prediction, auxiliary)
-        loader (DataLoader): data loader with sample structure
-            that follows unpacking (input, target, classes)
-    Returns:
-        float: classification accuracy
-    """
-    
-    accuracy = 0.
-    counter = 0
-    
-    model.eval()
-    
-    with torch.no_grad():
-        for (input, target, _) in loader:
-            output, _ = model(input)
-            
-            accuracy += (output >= 0.5) == target
-            counter += target.size(0)
-                
-    return (accuracy.sum() / counter).float().item()
+        plt.savefig(os.path.join(directory,
+                                 f"TESTING_METRICS_{dt.datetime.today()}.png"))
