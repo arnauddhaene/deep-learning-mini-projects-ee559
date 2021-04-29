@@ -1,9 +1,9 @@
 from typing import Tuple
 
-from dlc_practical_prologue import generate_pair_sets
-
 import torch
 from torch.utils.data import TensorDataset, DataLoader
+
+from dlc_practical_prologue import generate_pair_sets
 
 
 def standardized(t: torch.tensor, mean: torch.tensor, std: torch.tensor) -> torch.tensor:

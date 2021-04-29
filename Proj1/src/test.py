@@ -1,10 +1,11 @@
 import click
-from train import train
+
 from metrics import TrainingMetrics, TestingMetrics
 from models.convnet import ConvNet
 from models.siamese_convnet import SiameseConvNet
-from utils import load_dataset
 from models.mlp import MLP
+from train import train
+from utils import load_dataset
 
 
 @click.command()
@@ -23,7 +24,6 @@ from models.mlp import MLP
               help="Number of trials to run.")
 @click.option('--verbose/--no-verbose', default=False, type=bool,
               help="Print out info for debugging purposes.")
-              
 def run(model, siamese, epochs, lr, decay, trials, verbose):
 
     train_loader, test_loader = load_dataset()
@@ -33,7 +33,7 @@ def run(model, siamese, epochs, lr, decay, trials, verbose):
     for trial in range(trials):
 
         if siamese:
-            model = SiameseConvNet() #if model == 'ConvNet' else MLP()
+            model = SiameseConvNet()  # if model == 'ConvNet' else SiameseMLP()
         else:
             model = ConvNet() if model == 'ConvNet' else MLP()
             

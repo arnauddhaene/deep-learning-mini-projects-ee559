@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 
@@ -31,7 +32,7 @@ class ConvNet(nn.Module):
         self.fc1 = nn.Linear(64 * 5 * 5, 128)
         self.fc2 = nn.Linear(128, 20)
         self.fc3 = nn.Linear(20, 10)
-        self.fc4 = nn.Linear(10,1)
+        self.fc4 = nn.Linear(10, 1)
         
         # regularizers
         self.drop = nn.Dropout(0.1)
@@ -44,7 +45,7 @@ class ConvNet(nn.Module):
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x):
+    def forward(self, x: torch.tensor) -> torch.tensor:
         """
         Forward pass function
 
@@ -67,11 +68,9 @@ class ConvNet(nn.Module):
         x = self.drop(self.fc2(x))
         x = self.relu(x)
 
-        
-
         x = self.drop(self.fc3(x))
         x = self.relu(x)
 
         x = self.sigmoid(self.fc4(x))
         
-        return x.squeeze(), None 
+        return x.squeeze(), None
