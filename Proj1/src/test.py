@@ -3,7 +3,7 @@ import click
 import datetime as dt
 
 import metrics
-from metrics import TrainingMetrics, TestMetric, TestingMetrics
+from metrics import TrainingMetrics, TestingMetrics
 from models.convnet import ConvNet
 from models.siamese_convnet import SiameseConvNet
 from models.mlp import MLP
