@@ -11,16 +11,17 @@ class SiameseConvNet(nn.Module):
         conv2 (nn.Conv2d)     : second convolutional layer
         fc1 (nn.Linear)       : first fully connected layer
         fc2 (nn.Linear)       : second fully connected layer
-        fc3 (nn.Linear)       : last fully connected layer
-        classifier (nn.Linear): classifier before last activation
+        fc3 (nn.Linear)       : third fully connected layer
+        fc4 (nn.Linear)       : last fully connected layer
         drop (nn.Dropout)     : dropout function
+        drop2d (nn.Dropout)   : dropout function that drop entires channels
         pool (nn.MaxPool2d)   : maxpool function
         relu (nn.Relu)        : relu activation function
         sigmoid (nn.Sigmoid)  : sigmoid activation function
     """
     
     def __init__(self):
-        """Initialize Convolutional Neural Network"""
+        """Initialize Siamese Convolutional Neural Network"""
         super().__init__()
     
         # convolutional layers
@@ -50,7 +51,7 @@ class SiameseConvNet(nn.Module):
             x [float32]: input image with dimension Bx1x14x14 (for batch size B)
 
         Returns:
-            [float32]: non activated tensor of dimension Bx1
+            [float32]: non activated tensor of dimension Bx1x10
         """
 
         x = self.drop(self.conv1(x))
@@ -76,6 +77,7 @@ class SiameseConvNet(nn.Module):
 
         Returns:
             [int]: predicted probability ]0,1[
+            [float32] : predicted classe by pair, size Bx2x10
         """
         input1 = x[:, 0, :, :].view(-1, 1, 14, 14) # size Bx1x14x14
         input2 = x[:, 1, :, :].view(-1, 1, 14, 14)
