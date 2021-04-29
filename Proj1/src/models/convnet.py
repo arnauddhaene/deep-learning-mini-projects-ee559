@@ -1,8 +1,10 @@
 import torch
 from torch import nn
 
+from models.custom import SizeableModule, NamedModule
 
-class ConvNet(nn.Module):
+
+class ConvNet(SizeableModule, NamedModule):
     """
     Convolutional Network Module
 
@@ -74,3 +76,7 @@ class ConvNet(nn.Module):
         x = self.sigmoid(self.fc4(x))
         
         return x.squeeze(), None
+    
+    def __str__(self) -> str:
+        """Representation"""
+        return "Convolutional Neural Network"

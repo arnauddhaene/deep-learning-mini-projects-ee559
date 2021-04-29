@@ -65,5 +65,5 @@ def train(
             optimizer.step()
             
         metrics.add_entry(epoch, acc_loss, evaluate_accuracy(model, train_loader), run)
-        if verbose > 0:
+        if verbose > 1:
             print(metrics)

@@ -8,4 +8,4 @@
 
 * COUPET, Léopold
 * DHAENE, Arnaud
-* PISAREWSKI, Neil
+* PISAREWSKI, Alexander

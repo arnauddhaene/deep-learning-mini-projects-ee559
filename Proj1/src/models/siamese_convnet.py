@@ -1,8 +1,10 @@
 import torch
 from torch import nn
 
+from models.custom import SizeableModule, NamedModule
 
-class SiameseConvNet(nn.Module):
+
+class SiameseConvNet(SizeableModule, NamedModule):
     """
     Siamese Convolutional Network Module
 
@@ -93,3 +95,7 @@ class SiameseConvNet(nn.Module):
         output = self.sigmoid(self.fc4(output))  # size Bx1x1
         
         return output.squeeze(), auxiliary
+    
+    def __str__(self) -> str:
+        """Representation"""
+        return "Siamese Convolutional Neural Network"

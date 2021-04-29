@@ -3,7 +3,7 @@ import click
 import datetime as dt
 
 import metrics
-from metrics import TrainingMetrics, TestingMetrics
+from metrics import TrainingMetrics, TestMetric, TestingMetrics
 from models.convnet import ConvNet
 from models.siamese_convnet import SiameseConvNet
 from models.mlp import MLP
@@ -27,7 +27,7 @@ from utils import load_dataset
               help="Number of trials to run.")
 @click.option('--clear-figs/--keep-figs', default=False, type=bool,
               help="Clear the figures directory of all its contents.")
-@click.option('--verbose/--no-verbose', default=False, type=bool,
+@click.option('--verbose', default=1, type=int,
               help="Print out info for debugging purposes.")
 def run(model, siamese, epochs, lr, decay, trials, clear_figs, verbose):
     
@@ -40,7 +40,8 @@ def run(model, siamese, epochs, lr, decay, trials, clear_figs, verbose):
     
     train_loader, test_loader = load_dataset()
 
-    train_metrics = TrainingMetrics()
+    training_metrics = TrainingMetrics()
+    testing_metrics = TestingMetrics()
 
     for trial in range(trials):
 
@@ -49,17 +50,20 @@ def run(model, siamese, epochs, lr, decay, trials, clear_figs, verbose):
         else:
             model = ConvNet() if model == 'ConvNet' else MLP()
             
+        if verbose > 1:
+            print(f"{model} instanciated with {model.param_count()} parameters.")
+            
         # model.train(True) # TEST @lacoupe
         train(model, train_loader,
               learning_rate=lr, weight_decay=decay, epochs=epochs,
-              metrics=train_metrics, run=trial,
+              metrics=training_metrics, run=trial,
               verbose=verbose)
         # model.train(False) # TEST @lacoupe
-        test_metrics = TestingMetrics(model, test_loader)
-        print(f"{trial:02} TEST METRICS \t {test_metrics}")
-        test_metrics.plot(timestamp)
-
-    train_metrics.plot(timestamp)
+        
+        testing_metrics.add_entry(model, test_loader, verbose)
+    
+    training_metrics.plot(timestamp)
+    testing_metrics.plot(timestamp)
 
 
 if __name__ == '__main__':

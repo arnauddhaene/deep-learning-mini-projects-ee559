@@ -1,7 +1,9 @@
 import torch.nn as nn
 
+from models.custom import SizeableModule, NamedModule
 
-class MLP(nn.Module):
+
+class MLP(SizeableModule, NamedModule):
     # TODO: @pisa documentation and typing of this file
     """[summary]
 
@@ -51,3 +53,7 @@ class MLP(nn.Module):
         x = self.sigmoid(self.classifier(x))
         
         return x.squeeze(), None
+    
+    def __str__(self) -> str:
+        """Representation"""
+        return "Multi-Layer Perceptron"
