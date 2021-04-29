@@ -25,7 +25,7 @@ def run(epochs, lr, decay, verbose):
     
     metrics.plot()
     
-    print(f"Test accuracy {evaluate_accuracy(model, test_loader) * 100:06.3f}")
+    print("Test accuracy {evaluate_accuracy(model, test_loader) * 100:06.3f}")
 
 if __name__ == '__main__':
     run()
