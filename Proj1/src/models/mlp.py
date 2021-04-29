@@ -1,5 +1,4 @@
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 class MLP(nn.Module):
@@ -14,14 +13,18 @@ class MLP(nn.Module):
         """[summary]
         """
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(2 * 14 * 14, 192)
-        self.fc2 = nn.Linear(192, 98)
+        self.fc1 = nn.Linear(2 * 14 * 14, 128)
+        self.fc2 = nn.Linear(128, 98)
         self.fc3 = nn.Linear(98, 49)
         self.fc4 = nn.Linear(49, 10)
-        self.fc5 = nn.Linear(10, 1)
-        # dropout layer (p=0.2)
-
-        self.drop = nn.Dropout(0.1)
+        
+        self.classifier = nn.Linear(10, 1)
+        
+        # dropout layer
+        self.drop = nn.Dropout(0.2)
+        
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
         
     def forward(self, x):
         """[summary]
@@ -35,14 +38,16 @@ class MLP(nn.Module):
         # flatten image input
         x = x.flatten(start_dim=1)  # (-1, 2x14x14)
         # add hidden layer, with relu activation function
-        x = F.relu(self.fc1(x))
+        x = self.relu(self.fc1(x))
         x = self.drop(x)
-        x = F.relu(self.fc2(x))
-        x = self.drop(x)
-        x = F.relu(self.fc3(x))
-        x = F.relu(self.fc4(x))
-        x = F.relu(self.fc5(x))
-        x = x.sigmoid()
-        x = x.view(-1)
         
-        return x, None
+        x = self.relu(self.fc2(x))
+        x = self.drop(x)
+        
+        x = self.relu(self.fc3(x))
+        x = self.drop(x)
+        
+        x = self.fc4(x)
+        x = self.sigmoid(self.classifier(x))
+        
+        return x.squeeze(), None
