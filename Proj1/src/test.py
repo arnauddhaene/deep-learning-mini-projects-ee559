@@ -37,11 +37,12 @@ def run(model, siamese, epochs, lr, decay, trials, verbose):
         else:
             model = ConvNet() if model == 'ConvNet' else MLP()
             
+        # model.train(True) # TEST @lacoupe
         train(model, train_loader,
               learning_rate=lr, weight_decay=decay, epochs=epochs,
               metrics=train_metrics, run=trial,
               verbose=verbose)
-        
+        # model.train(False) # TEST @lacoupe
         test_metrics = TestingMetrics(model, test_loader)
         print(f"{trial:02} TEST METRICS \t {test_metrics}")
         test_metrics.plot()

@@ -38,7 +38,8 @@ def train(
     for epoch in range(epochs):
         
         acc_loss = 0.
-        
+
+        # model.train(True) # TEST @lacoupe
         model.train()
         
         for input, target, classes in train_loader:
