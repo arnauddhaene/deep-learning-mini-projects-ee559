@@ -30,8 +30,8 @@ class SiameseConvNet(nn.Module):
         # fully connected layers
         self.fc1 = nn.Linear(64 * 5 * 5, 128)
         self.fc2 = nn.Linear(128, 10)
-        self.fc3 = nn.Linear(10, 1)
-        self.classifier = nn.Linear(2, 1)
+        self.fc3 = nn.Linear(20, 10)
+        self.fc4 = nn.Linear(10, 1)
         
         # regularizers
         self.drop = nn.Dropout(0.1)
@@ -52,8 +52,6 @@ class SiameseConvNet(nn.Module):
         Returns:
             [float32]: non activated tensor of dimension Bx1
         """
-        # TODO: @lacoupe as mentioned below, the output of `forward_once` should be Bx1x10
-        #       in order to adhere to auxiliary loss criterion in the training method
 
         x = self.drop(self.conv1(x))
         x = self.relu(x)
@@ -65,9 +63,7 @@ class SiameseConvNet(nn.Module):
         x = self.relu(x)
         
         x = self.drop(self.fc2(x))
-        x = self.relu(x)
         
-        x = self.fc3(x)
         
         return x
 
@@ -81,18 +77,16 @@ class SiameseConvNet(nn.Module):
         Returns:
             [int]: predicted probability ]0,1[
         """
-        input1 = x[:, 0, :, :].view(-1, 1, 14, 14)
+        input1 = x[:, 0, :, :].view(-1, 1, 14, 14) # size Bx1x14x14
         input2 = x[:, 1, :, :].view(-1, 1, 14, 14)
         
-        x1 = self.forward_once(input1)
-        x2 = self.forward_once(input2)
+        x1 = self.forward_once(input1) # size Bx1x10
+        x2 = self.forward_once(input2) 
         
-        # TODO: @lacoupe add this to get the auxiliary losses
-        # They must each (x1 and x2) be formatted as Bx1x10 to work in the training method
+        auxiliary = torch.stack((x1, x2), 1) # size Bx2x10
         
-        # auxiliary = torch.stack((x1, x2), 1)
+        output = torch.cat((x1, x2), 1) # size Bx1x20
+        output = self.relu(self.fc3(output)) # size Bx1x10
+        output = self.sigmoid(self.fc4(output)) # size Bx1x1
         
-        output = torch.cat((x1, x2), 1)
-        output = self.sigmoid(self.classifier(output))
-        
-        return output.squeeze(), None
+        return output.squeeze(), auxiliary
