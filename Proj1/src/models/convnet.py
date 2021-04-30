@@ -27,12 +27,12 @@ class ConvNet(SizeableModule, NamedModule):
         super().__init__()
     
         # convolutional layers
-        self.conv1 = nn.Conv2d(2, 32, kernel_size=3)   # 32x(14-2)x(14-2) = 32x12x12
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # 64x10x10  => pooling = 64x5x5
+        self.conv1 = nn.Conv2d(2, 16, kernel_size=3)   # 16x(14-2)x(14-2) = 16x12x12
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3)  # 32x10x10  => pooling = 32x5x5
         
         # fully connected layers
-        self.fc1 = nn.Linear(64 * 5 * 5, 128)
-        self.fc2 = nn.Linear(128, 20)
+        self.fc1 = nn.Linear(32 * 5 * 5, 64)
+        self.fc2 = nn.Linear(64, 20)
         self.fc3 = nn.Linear(20, 10)
         self.fc4 = nn.Linear(10, 1)
         
@@ -40,8 +40,8 @@ class ConvNet(SizeableModule, NamedModule):
         self.drop = nn.Dropout(0.1)
         self.drop2d = nn.Dropout2d(0.1)
         self.pool = nn.MaxPool2d(kernel_size=2)
-        self.bn2d = nn.BatchNorm2d(32)
-        self.bn = nn.BatchNorm1d(128)
+        self.bn2d = nn.BatchNorm2d(16, affine = False)
+        self.bn = nn.BatchNorm1d(64, affine = False)
 
         # activation functions
         self.relu = nn.ReLU()
