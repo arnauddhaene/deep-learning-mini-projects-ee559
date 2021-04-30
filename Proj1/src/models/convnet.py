@@ -40,8 +40,8 @@ class ConvNet(SizeableModule, NamedModule):
         self.drop = nn.Dropout(0.1)
         self.drop2d = nn.Dropout2d(0.1)
         self.pool = nn.MaxPool2d(kernel_size=2)
-        self.bn2d = nn.BatchNorm2d(16, affine = False)
-        self.bn = nn.BatchNorm1d(64, affine = False)
+        self.bn2d = nn.BatchNorm2d(16, affine=False)
+        self.bn = nn.BatchNorm1d(64, affine=False)
 
         # activation functions
         self.relu = nn.ReLU()
