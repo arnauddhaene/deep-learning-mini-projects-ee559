@@ -1,9 +1,9 @@
 from typing import Tuple
 
-from dlc_practical_prologue import generate_pair_sets
-
 import torch
 from torch.utils.data import TensorDataset, DataLoader
+
+from dlc_practical_prologue import generate_pair_sets
 
 
 def standardized(t: torch.tensor, mean: torch.tensor, std: torch.tensor) -> torch.tensor:
@@ -23,7 +23,7 @@ def standardized(t: torch.tensor, mean: torch.tensor, std: torch.tensor) -> torc
   
   
 def load_dataset(
-    N: int = 1000, batch_size: int = 50
+    N: int = 1000, batch_size: int = 50, standardize: bool = True
 ) -> Tuple[DataLoader, DataLoader]:
     """
     Load MNIST dataset in the following format:
@@ -35,6 +35,7 @@ def load_dataset(
         N (int, optional): Number of samples to fetch for each set.
             Defaults to 1000.
         batch_size (int, optional): Batch size for DataLoader. Defaults to 50.
+        standardize (bool, optional): Standardize train and test sets. Defaults to True.
 
     Returns:
         Tuple[DataLoader, DataLoader]: train and test DataLoaders
@@ -43,11 +44,12 @@ def load_dataset(
     train_input, train_target, train_classes, \
         test_input, test_target, test_classes = generate_pair_sets(N)
     
-    mu, sigma = train_input.mean(), train_input.std()
-    
-    # Standardize train and test with train statistics
-    train_input = standardized(train_input, mu, sigma)
-    test_input = standardized(test_input, mu, sigma)
+    if standardize:
+        mu, sigma = train_input.mean(), train_input.std()
+        
+        # Standardize train and test with train statistics
+        train_input = standardized(train_input, mu, sigma)
+        test_input = standardized(test_input, mu, sigma)
 
     train = TensorDataset(train_input, train_target, train_classes)
     test = TensorDataset(test_input, test_target, test_classes)

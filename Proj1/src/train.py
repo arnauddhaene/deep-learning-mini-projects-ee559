@@ -7,7 +7,7 @@ from metrics import evaluate_accuracy, TrainingMetrics
 
 def train(
     model: nn.Module, train_loader: DataLoader,
-    learning_rate: float = 1e-2, weight_decay: float = 1e-3,
+    learning_rate: float = 1e-2, weight_decay: float = 1e-3, gamma: float = .5,
     epochs: int = 25,
     metrics: TrainingMetrics = TrainingMetrics(),
     run: int = 1,
@@ -21,6 +21,7 @@ def train(
         train_loader (DataLoader): data loader
         learning_rate (float, optional): learning rate. Defaults to 1e-2.
         weight_decay (float, optional): weight decay for Adam. Defaults to 1e-3.
+        gamma (float, optional): auxiliary contribution. Defaults to .5.
         epochs (int, optional): number of epochs. Defaults to 25.
         metrics (metrics.TrainingMetrics): metrics object to store results in
         run (int, optional): run number when performing trials
@@ -43,6 +44,7 @@ def train(
         model.train()
         
         for input, target, classes in train_loader:
+            optimizer.zero_grad()
             
             output, auxiliary = model(input)
             loss = criterion(output, target.float())
@@ -57,13 +59,12 @@ def train(
                     aux_criterion(auxiliary_2, target_class_2)
             
             # TODO: @arnauddhaene make this 0.5 parameter tunable in test script
-            combined_loss = loss + 0.5 * aux_loss
+            combined_loss = loss + gamma * aux_loss
             acc_loss += combined_loss.item()
             
-            optimizer.zero_grad()
             combined_loss.backward()
             optimizer.step()
             
         metrics.add_entry(epoch, acc_loss, evaluate_accuracy(model, train_loader), run)
-        if verbose > 0:
+        if verbose > 1:
             print(metrics)

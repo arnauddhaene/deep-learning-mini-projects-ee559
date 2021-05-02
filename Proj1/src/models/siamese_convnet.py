@@ -1,8 +1,10 @@
 import torch
 from torch import nn
 
+from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
-class SiameseConvNet(nn.Module):
+
+class SiameseConvNet(SizeableModule, NamedModule, WeightInitializableModule):
     """
     Siamese Convolutional Network Module
 
@@ -25,12 +27,12 @@ class SiameseConvNet(nn.Module):
         super().__init__()
     
         # convolutional layers
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=3)   # 32x(14-2)x(14-2) = 16x12x12
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)  # 64x10x10  => pooling = 64x5x5
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3)   # 16x(14-2)x(14-2) = 16x12x12
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3)  # 32x10x10  => pooling = 32x5x5
         
         # fully connected layers
-        self.fc1 = nn.Linear(64 * 5 * 5, 128)
-        self.fc2 = nn.Linear(128, 10)
+        self.fc1 = nn.Linear(32 * 5 * 5, 64)
+        self.fc2 = nn.Linear(64, 10)
         self.fc3 = nn.Linear(20, 10)
         self.fc4 = nn.Linear(10, 1)
         
@@ -38,14 +40,17 @@ class SiameseConvNet(nn.Module):
         self.drop = nn.Dropout(0.1)
         self.drop2d = nn.Dropout2d(0.1)
         self.pool = nn.MaxPool2d(kernel_size=2)
-        self.bn2d = nn.BatchNorm2d(32)
-        self.bn = nn.BatchNorm1d(128)
+        self.bn2d = nn.BatchNorm2d(16, affine=False)
+        self.bn = nn.BatchNorm1d(64, affine=False)
 
         # activation functions
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
+        
+        # Initialize weights
+        self.apply(self.weights_init)
 
-    def forward_once(self, x):
+    def forward_once(self, x: torch.tensor) -> torch.tensor:
         """
         Forward pass function used in the sub-network
 
@@ -67,10 +72,9 @@ class SiameseConvNet(nn.Module):
         
         x = self.drop(self.fc2(x))
         
-        
         return x
 
-    def forward(self, x):
+    def forward(self, x: torch.tensor) -> torch.tensor:
         """
         Forward pass function for the global siamese CNN
 
@@ -81,16 +85,20 @@ class SiameseConvNet(nn.Module):
             [int]: predicted probability ]0,1[
             [float32] : predicted classe by pair, size Bx2x10
         """
-        input1 = x[:, 0, :, :].view(-1, 1, 14, 14) # size Bx1x14x14
+        input1 = x[:, 0, :, :].view(-1, 1, 14, 14)  # size Bx1x14x14
         input2 = x[:, 1, :, :].view(-1, 1, 14, 14)
         
-        x1 = self.forward_once(input1) # size Bx1x10
-        x2 = self.forward_once(input2) 
+        x1 = self.forward_once(input1)  # size Bx1x10
+        x2 = self.forward_once(input2)
         
-        auxiliary = torch.stack((x1, x2), 1) # size Bx2x10
+        auxiliary = torch.stack((x1, x2), 1)  # size Bx2x10
         
-        output = torch.cat((x1, x2), 1) # size Bx1x20
-        output = self.relu(self.fc3(output)) # size Bx1x10
-        output = self.sigmoid(self.fc4(output)) # size Bx1x1
+        output = torch.cat((x1, x2), 1)  # size Bx1x20
+        output = self.relu(self.fc3(output))  # size Bx1x10
+        output = self.sigmoid(self.fc4(output))  # size Bx1x1
         
         return output.squeeze(), auxiliary
+    
+    def __str__(self) -> str:
+        """Representation"""
+        return "Siamese Convolutional Neural Network"

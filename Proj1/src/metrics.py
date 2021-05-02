@@ -3,7 +3,9 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 import os
+import shutil
 import datetime as dt
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -12,8 +14,94 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Update rc parameters
+SMALL_SIZE = 10
+MEDIUM_SIZE = 12
+LARGE_SIZE = 16
+
+mpl.rcParams['font.family'] = 'serif'
+mpl.rcParams['font.size'] = SMALL_SIZE
+mpl.rcParams['axes.titlesize'] = SMALL_SIZE
+mpl.rcParams['axes.labelsize'] = MEDIUM_SIZE
+mpl.rcParams['xtick.labelsize'] = SMALL_SIZE
+mpl.rcParams['ytick.labelsize'] = SMALL_SIZE
+mpl.rcParams['legend.fontsize'] = SMALL_SIZE
+mpl.rcParams['figure.titlesize'] = LARGE_SIZE
+
 mpl.rcParams['figure.figsize'] = [8.3, 5.1]
+
+mpl.rcParams['axes.grid'] = True
+mpl.rcParams['axes.facecolor'] = '#F5F5F5'
+mpl.rcParams['axes.axisbelow'] = True
+mpl.rcParams['grid.linestyle'] = ':'
+
 FIGURE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'figures')
+
+if not os.path.exists(FIGURE_DIR):
+    os.makedirs(FIGURE_DIR)
+
+
+def clear_figures() -> None:
+    """Clear figures directory and all subdirectories"""
+    
+    for filename in os.listdir(FIGURE_DIR):
+        filepath = os.path.join(FIGURE_DIR, filename)
+        try:
+            shutil.rmtree(filepath)
+        except OSError:
+            os.remove(filepath)
+    
+
+def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
+    """
+    Computes the classification accuracy of a model.
+    Args:
+        model (nn.Module): model of interest with output (prediction, auxiliary)
+        loader (DataLoader): data loader with sample structure
+            that follows unpacking (input, target, classes)
+    Returns:
+        float: classification accuracy
+    """
+    
+    accuracy = 0.
+    counter = 0
+    
+    model.eval()
+    
+    with torch.no_grad():
+        for (input, target, _) in loader:
+            output, _ = model(input)
+            
+            accuracy += (output >= 0.5) == target
+            counter += target.size(0)
+                
+    return (accuracy.sum() / counter).float().item()
+
+
+def heatmap(values: List[float], ax: mpl.axes.Axes) -> mpl.axes.Axes:
+    """
+    Plot a seaborn heatmap
+
+    Args:
+        values (List[float]): list of values in the following order:
+            * true positives
+            * false negatives
+            * false positives
+            * true negatives
+    """
+    
+    mf = pd.DataFrame(
+        np.array(values).reshape(2, 2)
+    )
+        
+    mf.columns, mf.index = ['True', 'False'], ['True', 'False']
+
+    sns.heatmap(mf, annot=True, cmap='Blues', fmt='g', ax=ax)
+
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('Ground Truth')
+    
+    return ax
 
 
 class TrainingMetrics:
@@ -72,9 +160,17 @@ class TrainingMetrics:
         self.current = epoch
         self.metrics[f"R{run}E{epoch}"] = \
             dict(epoch=epoch, loss=loss, accuracy=accuracy, run=run)
-            
-    def plot(self) -> None:
-        """Plot metrics"""
+    
+    def _average_accuracy(self):
+        mf = pd.DataFrame.from_dict(self.metrics, orient='index')
+        return mf.accuracy.mean()
+    
+    def plot(self, directory: str) -> None:
+        """Plot metrics
+
+        Args:
+            directory (str): sub-directory to save the plots in
+        """
         mf = pd.DataFrame.from_dict(self.metrics, orient='index')
         # mf['epoch'] = mf.index
         fig = plt.figure()
@@ -94,13 +190,14 @@ class TrainingMetrics:
                    bbox_transform=ax_loss.transAxes, ncol=2)
 
         plt.suptitle("Training loss and accuracy")
+        
+        directory = os.path.join(FIGURE_DIR, directory)
 
-        plt.savefig(os.path.join(FIGURE_DIR,
+        plt.savefig(os.path.join(directory,
                                  f"TRAINING_METRICS_{dt.datetime.today()}.png"))
 
 
-# TODO: @arnauddhaene generalize this to trials in order to get information about multiple tests
-class TestingMetrics():
+class TestMetric():
     """[summary]
     
     Attributes:
@@ -124,8 +221,8 @@ class TestingMetrics():
         """
         self.model = model
         self.loader = data_loader
-        self.confusion = dict(true_positive=0, false_negative=0,
-                              false_positive=0, true_negative=0)
+        self.confusion = dict(true_positive=0., false_negative=0.,
+                              false_positive=0., true_negative=0.)
         self.accuracy = 0.
         self.precision = 0.
         self.recall = 0.
@@ -162,13 +259,22 @@ class TestingMetrics():
         self.accuracy = (self.confusion['true_positive'] + self.confusion['true_negative']) \
             / sum(list(self.confusion.values()))
         
-        self.precision = self.confusion['true_positive'] \
-            / (self.confusion['true_positive'] + self.confusion['false_positive'])
-            
-        self.recall = self.confusion['true_positive'] \
-            / (self.confusion['true_positive'] + self.confusion['false_negative'])
-            
-        self.f1_score = 2 * self.precision * self.recall / (self.precision + self.recall)
+        if (self.confusion['true_positive'] + self.confusion['false_positive']) == 0.:
+            self.precision = 0.
+        else:
+            self.precision = self.confusion['true_positive'] \
+                / (self.confusion['true_positive'] + self.confusion['false_positive'])
+        
+        if (self.confusion['true_positive'] + self.confusion['false_negative']) == 0.:
+            self.recall = 0.
+        else:
+            self.recall = self.confusion['true_positive'] \
+                / (self.confusion['true_positive'] + self.confusion['false_negative'])
+        
+        if (self.precision + self.recall) == 0.:
+            self.f1_score = 0.
+        else:
+            self.f1_score = 2 * self.precision * self.recall / (self.precision + self.recall)
         
     def __str__(self) -> str:
         """
@@ -180,46 +286,122 @@ class TestingMetrics():
         return f"Acc. {self.accuracy * 100:06.3f} | Prec. {self.precision * 100:06.3f} | " \
             f"Rec. {self.accuracy * 100:06.3f} | F1 {self.f1_score * 100:06.3f}"
             
-    def plot(self) -> None:
-        """Plotting function"""
-        
-        mf = pd.DataFrame(
-            np.array(list(self.confusion.values())).reshape(2, 2)
-        )
-        
-        mf.columns, mf.index = ['True', 'False'], ['True', 'False']
-        
+    def serialize(self) -> dict:
+        """Serialize instance into dictionary
+
+        Returns:
+            dict: serialized object
+        """
+        return {
+            'true_positive': self.confusion['true_positive'],
+            'false_negative': self.confusion['false_negative'],
+            'false_positive': self.confusion['false_positive'],
+            'true_negative': self.confusion['true_negative'],
+            'accuracy': self.accuracy,
+            'precision': self.precision,
+            'recall': self.recall,
+            'f1_score': self.f1_score
+        }
+            
+    def plot(self, directory: str) -> None:
+        """Plot metrics
+
+        Args:
+            directory (str): sub-directory to save the plots in
+        """
         fig, ax = plt.subplots()
         
-        sns.heatmap(mf, annot=True, cmap='Blues', fmt='d', ax=ax)
+        heatmap(list(self.confusion.values()), ax=ax)
         
-        ax.set_xlabel('Predicted')
-        ax.set_ylabel('Ground Truth')
+        plt.suptitle('Test metric: ' + self.__str__())
         
-        plt.savefig(os.path.join(FIGURE_DIR, f"TESTING_METRICS_{dt.datetime.today()}.png"))
-        
+        directory = os.path.join(FIGURE_DIR, directory)
 
-def evaluate_accuracy(model: nn.Module, loader: DataLoader) -> float:
-    """
-    Computes the classification accuracy of a model.
-    Args:
-        model (nn.Module): model of interest with output (prediction, auxiliary)
-        loader (DataLoader): data loader with sample structure
-            that follows unpacking (input, target, classes)
-    Returns:
-        float: classification accuracy
-    """
+        plt.savefig(os.path.join(directory,
+                                 f"TEST_METRIC_{dt.datetime.today()}.png"))
+
+
+class TestingMetrics():
     
-    accuracy = 0.
-    counter = 0
-    
-    model.eval()
-    
-    with torch.no_grad():
-        for (input, target, _) in loader:
-            output, _ = model(input)
+    def __init__(self) -> None:
+        """Constructor"""
+        self.metrics = []
+        self.materialized = None
+        
+    def add_entry(self, model: nn.Module, loader: DataLoader, verbose: int) -> None:
+        
+        test_metric = TestMetric(model, loader)
+        self.metrics.append(test_metric)
+        
+        if (verbose > 0):
+            print(test_metric)
             
-            accuracy += (output >= 0.5) == target
-            counter += target.size(0)
-                
-    return (accuracy.sum() / counter).float().item()
+    def materialize(self):
+        
+        self.materialized = list(map(lambda m: m.serialize(), self.metrics))
+    
+    def _average_accuracy(self):
+        if self.materialized is None:
+            self.materialize()
+        
+        mets = pd.DataFrame(self.materialized)
+            
+        return mets.accuracy.mean()
+    
+    def plot(self, directory: str) -> None:
+        """Plot metrics
+
+        Args:
+            directory (str): sub-directory to save the plots in
+        """
+        self.materialize()
+        
+        mets = pd.DataFrame(self.materialized)
+        
+        fig = plt.figure()
+        
+        gs = fig.add_gridspec(2, 2)
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[1, 0])
+        ax3 = fig.add_subplot(gs[:, 1])
+        
+        # Average confusion values
+        c_avg = mets[['true_positive', 'false_negative', 'false_positive', 'true_negative']].mean()
+        
+        if len(mets) == 1:
+            c_std = [0., 0., 0., 0.]
+        else:
+            c_std = \
+                mets[['true_positive', 'false_negative', 'false_positive', 'true_negative']].std()
+        
+        ax1.set_title('Confusion matrix (average)')
+        heatmap(list(c_avg), ax=ax1)
+        ax2.set_title('Confusion matrix (std. dev.)')
+        heatmap(list(c_std), ax=ax2)
+        
+        scalar_metrics = ['accuracy', 'precision', 'recall', 'f1_score']
+        
+        scalars = []
+
+        for metric in self.metrics:
+            for k, v in metric.items():
+                if k in scalar_metrics:
+                    scalars.append({'value': v, 'metric': k})
+                    
+        sf = pd.DataFrame(scalars)
+        
+        palette = sns.color_palette('Blues', n_colors=4)
+        
+        ax3.set_title('Scalar metrics')
+        sns.barplot(data=sf, x="metric", y="value", ci='sd',
+                    palette=palette, ax=ax3)
+        ax3.set_ylim(0, 1)
+        ax3.yaxis.set_major_locator(mpl.ticker.MultipleLocator(0.05))
+        
+        plt.suptitle('Aggregate test metrics')
+        
+        plt.tight_layout()
+        
+        directory = os.path.join(FIGURE_DIR, directory)
+        plt.savefig(os.path.join(directory,
+                                 f"TESTING_METRICS_{dt.datetime.today()}.png"))
