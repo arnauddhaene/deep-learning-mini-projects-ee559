@@ -1,18 +1,10 @@
+import torch
 import torch.nn as nn
 from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
 class MLP(SizeableModule, NamedModule, WeightInitializableModule):
-
-    """[summary]
-
-    Attributes:
-        fc1 ([type]): [description]
     """
-    
-    def __init__(self):
-
-        """
     Siamese Multi Layer Perceptron
 
     Attributes:
@@ -23,6 +15,9 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         drop (nn.Dropout)     : dropout function
         sigmoid (nn.Sigmoid)  : sigmoid activation function
     """
+    
+    def __init__(self):
+        """Constructor"""
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(14 * 14, 128)
         self.fc2 = nn.Linear(128, 98)
@@ -40,7 +35,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         # Initialize weights
         self.apply(self.weights_init)
         
-    def forward_once(self,x:torch.tensor) -> torch.tensor:
+    def forward_once(self, x: torch.tensor) -> torch.tensor:
         """
         Forward pass function for the global siamese CNN
 
@@ -67,9 +62,8 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
 
         return x
 
-
-    def forward(self, x:torch.tensor)-> torch.tensor:
-         """
+    def forward(self, x: torch.tensor) -> torch.tensor:
+        """
         Forward pass function for the global siamese CNN
 
         Args:

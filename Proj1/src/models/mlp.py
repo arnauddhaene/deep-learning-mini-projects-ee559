@@ -41,7 +41,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
             [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1) #(-1, 2x14x14)
+        x = x.flatten(start_dim=1)  # (-1, 2 x 14 x 14)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)
