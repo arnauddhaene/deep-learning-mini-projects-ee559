@@ -4,10 +4,13 @@ from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
 class MLP(SizeableModule, NamedModule, WeightInitializableModule):
-    """[summary]
+    """Multi Layer Perceptron 
 
     Attributes:
-        fc1 ([type]): [description]
+        fc1 ([type]): Fully connected linear layer (2*14*14) -> 128
+        fc2 ([type]): [description]
+        fc3 ([type]): [description]
+        fc4 ([type]): [description]
     """
     
     def __init__(self):
