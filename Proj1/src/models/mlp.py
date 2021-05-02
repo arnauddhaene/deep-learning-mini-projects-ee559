@@ -7,10 +7,14 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
     """Multi Layer Perceptron 
 
     Attributes:
-        fc1 ([type]): Fully connected linear layer (2*14*14) -> 128
-        fc2 ([type]): [description]
-        fc3 ([type]): [description]
-        fc4 ([type]): [description]
+        fc1 (nn.Linear): First Fully connected linear layer (2*14*14) -> (128)
+        fc2 (nn.Linear): Second Fully connected linear layer (128) -> (98)
+        fc3 (nn.Linear): Third Fully connected linear layer (98) -> (49)
+        fc4 (nn.Linear): Fourth [Fully connected linear layer (49) -> (10)
+        classifier (nn.classifier): 
+        drop (nn.drop):
+        sigmoid (nn.sigmoid)
+        relu (nn.sigmoid)
     """
     
     def __init__(self):
@@ -44,7 +48,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
             [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1)  # (-1, 2 x 14 x 14)
+        x = x.flatten(start_dim=1) #(-1, 2x14x14)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)
