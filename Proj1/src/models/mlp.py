@@ -1,10 +1,9 @@
+import torch
 import torch.nn as nn
-
 from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
 class MLP(SizeableModule, NamedModule, WeightInitializableModule):
-    # TODO: @pisa documentation and typing of this file
     """[summary]
 
     Attributes:
@@ -12,8 +11,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
     """
     
     def __init__(self):
-        """[summary]
-        """
+
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(2 * 14 * 14, 128)
         self.fc2 = nn.Linear(128, 98)
@@ -31,17 +29,19 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         # Initialize weights
         self.apply(self.weights_init)
         
-    def forward(self, x):
-        """[summary]
+    def forward(self, x: torch.tensor) -> torch.tensor:
+        """
+        Forward pass function for the global siamese CNN
 
         Args:
-            x ([type]): [description]
+            x [float32]: input images with dimension Bx2x14x14 (for batch size B)
 
         Returns:
-            [type]: [description]
+            [int]: predicted probability ]0,1[
+            [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1)  # (-1, 2x14x14)
+        x = x.flatten(start_dim=1) #(-1, 2x14x14)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)
