@@ -4,9 +4,10 @@ import datetime as dt
 
 import metrics
 from metrics import TrainingMetrics, TestingMetrics
+from models.mlp import MLP
+from models.siamese_mlp import SiameseMLP
 from models.convnet import ConvNet
 from models.siamese_convnet import SiameseConvNet
-from models.mlp import MLP
 from train import train
 from utils import load_dataset
 
@@ -85,7 +86,7 @@ def run(model, siamese, epochs,
     for trial in range(trials):
 
         if siamese:
-            model = SiameseConvNet()  # if model == 'ConvNet' else SiameseMLP()
+            model = SiameseConvNet() if model == 'ConvNet' else SiameseMLP()
         else:
             model = ConvNet() if model == 'ConvNet' else MLP()
             

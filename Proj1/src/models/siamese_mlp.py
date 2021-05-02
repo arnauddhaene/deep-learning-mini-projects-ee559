@@ -3,7 +3,7 @@ import torch.nn as nn
 from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
-class MLP(SizeableModule, NamedModule, WeightInitializableModule):
+class SiameseMLP(SizeableModule, NamedModule, WeightInitializableModule):
     """
     Siamese Multi Layer Perceptron
 
@@ -18,13 +18,13 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
     
     def __init__(self):
         """Constructor"""
-        super(MLP, self).__init__()
+        super().__init__()
         self.fc1 = nn.Linear(14 * 14, 128)
         self.fc2 = nn.Linear(128, 98)
         self.fc3 = nn.Linear(98, 49)
         self.fc4 = nn.Linear(49, 10)
         
-        self.classifier = nn.Linear(10, 1)
+        self.classifier = nn.Linear(20, 1)
         
         # dropout layer
         self.drop = nn.Dropout(0.2)
@@ -82,8 +82,9 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         auxiliary = torch.stack((x1, x2), 1)  # size Bx2x10
         
         output = torch.cat((x1, x2), 1)  # size Bx1x20
-        output = self.relu(self.fc3(output))  # size Bx1x10
-        output = self.sigmoid(self.fc4(output))  # size Bx1x1
+        
+        # output = self.relu(self.fc3(output))  # size Bx1x10
+        output = self.sigmoid(self.classifier(output))  # size Bx1x1
         
         return output.squeeze(), auxiliary
     
