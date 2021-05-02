@@ -383,7 +383,7 @@ class TestingMetrics():
         
         scalars = []
 
-        for metric in self.metrics:
+        for metric in self.materialized:
             for k, v in metric.items():
                 if k in scalar_metrics:
                     scalars.append({'value': v, 'metric': k})
