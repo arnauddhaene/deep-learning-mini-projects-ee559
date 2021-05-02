@@ -1,9 +1,9 @@
+import torch
 import torch.nn as nn
 from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
 class MLP(SizeableModule, NamedModule, WeightInitializableModule):
-    # TODO: @pisa documentation and typing of this file
     """[summary]
 
     Attributes:
@@ -12,17 +12,6 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
     
     def __init__(self):
 
-        """
-    Multi Layer Perceptron
-
-    Attributes:
-        fc1 (nn.Linear)       : first fully connected layer
-        fc2 (nn.Linear)       : second fully connected layer
-        fc3 (nn.Linear)       : third fully connected layer
-        fc4 (nn.Linear)       : last fully connected layer
-        drop (nn.Dropout)     : dropout function
-        sigmoid (nn.Sigmoid)  : sigmoid activation function
-    """
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(2 * 14 * 14, 128)
         self.fc2 = nn.Linear(128, 98)
@@ -40,8 +29,8 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         # Initialize weights
         self.apply(self.weights_init)
         
-    def forward(self, x):
-         """
+    def forward(self, x: torch.tensor) -> torch.tensor:
+        """
         Forward pass function for the global siamese CNN
 
         Args:
@@ -52,7 +41,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
             [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1)  # (-1, 2x14x14)
+        x = x.flatten(start_dim=1) #(-1, 2x14x14)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)

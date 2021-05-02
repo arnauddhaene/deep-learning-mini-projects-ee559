@@ -1,13 +1,19 @@
-import torch 
-import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
+from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
-class MLP(nn.Module):
+
+class MLP(SizeableModule, NamedModule, WeightInitializableModule):
+
+    """[summary]
+
+    Attributes:
+        fc1 ([type]): [description]
+    """
+    
     def __init__(self):
 
         """
-    Multi Layer Perceptron
+    Siamese Multi Layer Perceptron
 
     Attributes:
         fc1 (nn.Linear)       : first fully connected layer
@@ -18,18 +24,24 @@ class MLP(nn.Module):
         sigmoid (nn.Sigmoid)  : sigmoid activation function
     """
         super(MLP, self).__init__()
-        self.fc1 = nn.Linear(2*14 * 14, 192) 
-        self.fc2 = nn.Linear(192, 98)
+        self.fc1 = nn.Linear(14 * 14, 128)
+        self.fc2 = nn.Linear(128, 98)
         self.fc3 = nn.Linear(98, 49)
         self.fc4 = nn.Linear(49, 10)
-        self.fc5 = nn.Linear(10, 1)
-        # dropout layer (p=0.2)
-
-        self.drop = nn.Dropout(0.1)
         
-
-    def forward(self, x):
-         """
+        self.classifier = nn.Linear(10, 1)
+        
+        # dropout layer
+        self.drop = nn.Dropout(0.2)
+        
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+        
+        # Initialize weights
+        self.apply(self.weights_init)
+        
+    def forward_once(self,x:torch.tensor) -> torch.tensor:
+        """
         Forward pass function for the global siamese CNN
 
         Args:
@@ -40,15 +52,47 @@ class MLP(nn.Module):
             [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1) # (-1,2*14*14)
+        x = x.flatten(start_dim=1)  # (-1, 2x14x14)
         # add hidden layer, with relu activation function
-        x = F.relu(self.fc1(x))
-        x=self.drop(x)
-        x = F.relu(self.fc2(x))
-        x=self.drop(x)
-        x = F.relu(self.fc3(x))
-        x = F.relu(self.fc4(x))
-        x=F.relu(self.fc5(x))
-        x = x.sigmoid()
-        x=x.view(-1)
-        return x,None
+        x = self.relu(self.fc1(x))
+        x = self.drop(x)
+        
+        x = self.relu(self.fc2(x))
+        x = self.drop(x)
+        
+        x = self.relu(self.fc3(x))
+        x = self.drop(x)
+        
+        x = self.fc4(x)
+
+        return x
+
+
+    def forward(self, x:torch.tensor)-> torch.tensor:
+         """
+        Forward pass function for the global siamese CNN
+
+        Args:
+            x [float32]: input images with dimension Bx2x14x14 (for batch size B)
+
+        Returns:
+            [int]: predicted probability ]0,1[
+            [float32] : predicted classe by pair, size Bx2x10
+        """
+        input1 = x[:, 0, :, :].view(-1, 1, 14, 14)  # size Bx1x14x14
+        input2 = x[:, 1, :, :].view(-1, 1, 14, 14)
+        
+        x1 = self.forward_once(input1)  # size Bx1x10
+        x2 = self.forward_once(input2)
+        
+        auxiliary = torch.stack((x1, x2), 1)  # size Bx2x10
+        
+        output = torch.cat((x1, x2), 1)  # size Bx1x20
+        output = self.relu(self.fc3(output))  # size Bx1x10
+        output = self.sigmoid(self.fc4(output))  # size Bx1x1
+        
+        return output.squeeze(), auxiliary
+    
+    def __str__(self) -> str:
+        """Representation"""
+        return "Siamese Multi-Layer Perceptron"
