@@ -160,7 +160,11 @@ class TrainingMetrics:
         self.current = epoch
         self.metrics[f"R{run}E{epoch}"] = \
             dict(epoch=epoch, loss=loss, accuracy=accuracy, run=run)
-            
+    
+    def _average_accuracy(self):
+        mf = pd.DataFrame.from_dict(self.metrics, orient='index')
+        return mf.accuracy.mean()
+    
     def plot(self, directory: str) -> None:
         """Plot metrics
 
@@ -255,13 +259,22 @@ class TestMetric():
         self.accuracy = (self.confusion['true_positive'] + self.confusion['true_negative']) \
             / sum(list(self.confusion.values()))
         
-        self.precision = self.confusion['true_positive'] \
-            / (self.confusion['true_positive'] + self.confusion['false_positive'])
-            
-        self.recall = self.confusion['true_positive'] \
-            / (self.confusion['true_positive'] + self.confusion['false_negative'])
-            
-        self.f1_score = 2 * self.precision * self.recall / (self.precision + self.recall)
+        if (self.confusion['true_positive'] + self.confusion['false_positive']) == 0.:
+            self.precision = 0.
+        else:
+            self.precision = self.confusion['true_positive'] \
+                / (self.confusion['true_positive'] + self.confusion['false_positive'])
+        
+        if (self.confusion['true_positive'] + self.confusion['false_negative']) == 0.:
+            self.recall = 0.
+        else:
+            self.recall = self.confusion['true_positive'] \
+                / (self.confusion['true_positive'] + self.confusion['false_negative'])
+        
+        if (self.precision + self.recall) == 0.:
+            self.f1_score = 0.
+        else:
+            self.f1_score = 2 * self.precision * self.recall / (self.precision + self.recall)
         
     def __str__(self) -> str:
         """
@@ -310,13 +323,10 @@ class TestMetric():
 
 class TestingMetrics():
     
-    def __init__(self, metrics: List[TestMetric] = []) -> None:
-        """Constructor
-
-        Args:
-            metrics (List[TestMetric], optional): list of metrics. Defaults to [].
-        """
-        self.metrics = metrics
+    def __init__(self) -> None:
+        """Constructor"""
+        self.metrics = []
+        self.materialized = None
         
     def add_entry(self, model: nn.Module, loader: DataLoader, verbose: int) -> None:
         
@@ -328,8 +338,16 @@ class TestingMetrics():
             
     def materialize(self):
         
-        self.metrics = list(map(lambda m: m.serialize(), self.metrics))
+        self.materialized = list(map(lambda m: m.serialize(), self.metrics))
+    
+    def _average_accuracy(self):
+        if self.materialized is None:
+            self.materialize()
         
+        mets = pd.DataFrame(self.materialized)
+            
+        return mets.accuracy.mean()
+    
     def plot(self, directory: str) -> None:
         """Plot metrics
 
@@ -338,7 +356,7 @@ class TestingMetrics():
         """
         self.materialize()
         
-        mets = pd.DataFrame(self.metrics)
+        mets = pd.DataFrame(self.materialized)
         
         fig = plt.figure()
         
