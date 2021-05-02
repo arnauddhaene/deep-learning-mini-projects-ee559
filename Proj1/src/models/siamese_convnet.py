@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from models.custom import SizeableModule, NamedModule
+from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
-class SiameseConvNet(SizeableModule, NamedModule):
+class SiameseConvNet(SizeableModule, NamedModule, WeightInitializableModule):
     """
     Siamese Convolutional Network Module
 
@@ -46,6 +46,9 @@ class SiameseConvNet(SizeableModule, NamedModule):
         # activation functions
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
+        
+        # Initialize weights
+        self.apply(self.weights_init)
 
     def forward_once(self, x: torch.tensor) -> torch.tensor:
         """

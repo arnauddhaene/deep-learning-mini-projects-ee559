@@ -25,3 +25,18 @@ class NamedModule(nn.Module):
     
     def __str__(self):
         raise NotImplementedError
+    
+    
+class WeightInitializableModule(nn.Module):
+    
+    @staticmethod
+    def weights_init(layer: torch.tensor) -> None:
+        """
+        Initialize model weights
+
+        Args:
+            layer (torch.tensor): Model layer
+        """
+        if isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear):
+            nn.init.xavier_normal_(layer.weight.data)
+            nn.init.zeros_(layer.bias.data)

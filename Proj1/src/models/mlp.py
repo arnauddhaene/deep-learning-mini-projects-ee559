@@ -1,9 +1,9 @@
 import torch.nn as nn
 
-from models.custom import SizeableModule, NamedModule
+from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
-class MLP(SizeableModule, NamedModule):
+class MLP(SizeableModule, NamedModule, WeightInitializableModule):
     # TODO: @pisa documentation and typing of this file
     """[summary]
 
@@ -27,6 +27,9 @@ class MLP(SizeableModule, NamedModule):
         
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
+        
+        # Initialize weights
+        self.apply(self.weights_init)
         
     def forward(self, x):
         """[summary]

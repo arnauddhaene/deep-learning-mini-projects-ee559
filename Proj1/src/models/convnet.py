@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 
-from models.custom import SizeableModule, NamedModule
+from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
-class ConvNet(SizeableModule, NamedModule):
+class ConvNet(SizeableModule, NamedModule, WeightInitializableModule):
     """
     Convolutional Network Module
 
@@ -46,18 +46,20 @@ class ConvNet(SizeableModule, NamedModule):
         # activation functions
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
+        
+        # Initialize weights
+        self.apply(self.weights_init)
 
     def forward(self, x: torch.tensor) -> torch.tensor:
         """
         Forward pass function
 
         Args:
-            x [float32]: input images with dimension 50x2x14x14 (for a batch size of 50)
+            x (torch.tensor): Input tensors of dimensions [B, 2, 14, 14] with B being batch size
 
         Returns:
-            [int]: predicted probability ]0,1[
+            torch.tensor: Predicted probability of size [1]
         """
-
         x = self.drop(self.bn2d(self.conv1(x)))
         x = self.relu(x)
 
