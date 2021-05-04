@@ -61,7 +61,7 @@ class SiameseConvNet(SizeableModule, NamedModule, WeightInitializableModule):
             [float32]: non activated tensor of dimension Bx1x10
         """
 
-        x = self.drop(self.conv1(x))
+        x = self.bn2d(self.conv1(x))
         x = self.relu(x)
 
         x = self.drop2d(self.conv2(x))

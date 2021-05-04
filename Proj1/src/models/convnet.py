@@ -60,13 +60,13 @@ class ConvNet(SizeableModule, NamedModule, WeightInitializableModule):
         Returns:
             torch.tensor: Predicted probability of size [1]
         """
-        x = self.drop(self.bn2d(self.conv1(x)))
+        x = self.bn2d(self.conv1(x))
         x = self.relu(x)
 
         x = self.drop2d(self.conv2(x))
         x = self.relu(self.pool(x))
 
-        x = self.bn(self.drop(self.fc1(x.flatten(start_dim=1))))
+        x = self.drop(self.fc1(x.flatten(start_dim=1)))
         x = self.relu(x)
         
         x = self.drop(self.fc2(x))
