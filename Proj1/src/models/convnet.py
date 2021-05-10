@@ -66,7 +66,7 @@ class ConvNet(SizeableModule, NamedModule, WeightInitializableModule):
         x = self.drop2d(self.conv2(x))
         x = self.relu(self.pool(x))
 
-        x = self.drop(self.fc1(x.flatten(start_dim=1)))
+        x = self.drop(self.bn(self.fc1(x.flatten(start_dim=1))))
         x = self.relu(x)
         
         x = self.drop(self.fc2(x))

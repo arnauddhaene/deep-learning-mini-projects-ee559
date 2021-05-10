@@ -328,17 +328,25 @@ class TestingMetrics():
         self.metrics = []
         self.materialized = None
         
-    def add_entry(self, model: nn.Module, loader: DataLoader, verbose: int) -> None:
+    def add_entry(self, model: nn.Module, loader: DataLoader, time_per_epoch: float,
+                  verbose: int) -> None:
         
         test_metric = TestMetric(model, loader)
         self.metrics.append(test_metric)
         
         if (verbose > 0):
-            print(test_metric)
+            print(f"{test_metric} [{time_per_epoch:0.4f} sec. / epoch]")
             
     def materialize(self):
-        
         self.materialized = list(map(lambda m: m.serialize(), self.metrics))
+        
+    def save(self):
+        if self.materialized is None:
+            self.materialize()
+        
+        mets = pd.DataFrame(self.materialized)
+        
+        mets.to_csv("testing_metrics.csv", index=False)
     
     def _average_accuracy(self):
         if self.materialized is None:
