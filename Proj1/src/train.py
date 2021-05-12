@@ -58,7 +58,6 @@ def train(
                 aux_loss = aux_criterion(auxiliary_1, target_class_1) + \
                     aux_criterion(auxiliary_2, target_class_2)
             
-            # TODO: @arnauddhaene make this 0.5 parameter tunable in test script
             combined_loss = loss + gamma * aux_loss
             acc_loss += combined_loss.item()
             

@@ -1,6 +1,9 @@
 import os
 import click
+import time
 import datetime as dt
+
+import torch
 
 import metrics
 from metrics import TrainingMetrics, TestingMetrics
@@ -28,6 +31,8 @@ from utils import load_dataset
               help="Auxiliary contribution.")
 @click.option('--trials', default=1,
               help="Number of trials to run.")
+@click.option('--seed', default=27,
+              help="Seed for randomness.")
 @click.option('--batch-size', default=50,
               help="Batch size for training.")
 @click.option('--standardize/--dont-standardize', default=True, type=bool,
@@ -39,7 +44,7 @@ from utils import load_dataset
 @click.option('--verbose', default=1, type=int,
               help="Print out info for debugging purposes.")
 def run(model, siamese, epochs,
-        lr, decay, gamma, trials,
+        lr, decay, gamma, trials, seed,
         batch_size, standardize,
         make_figs, clear_figs, verbose):
     """[summary]
@@ -75,15 +80,18 @@ def run(model, siamese, epochs,
         timestamp = str(dt.datetime.today())
         os.makedirs(os.path.join(metrics.FIGURE_DIR, timestamp))
     
-    if verbose > 0:
-        print(f"Creating {'standardized' if standardize else ''} "
-              f"DataLoaders with batch size {batch_size}...")
-    train_loader, test_loader = load_dataset(batch_size=batch_size, standardize=standardize)
-
     training_metrics = TrainingMetrics()
     testing_metrics = TestingMetrics()
 
     for trial in range(trials):
+        
+        if verbose > 1:
+            print(f"Creating {'standardized' if standardize else ''} "
+                  f"DataLoaders with batch size {batch_size}...")
+        torch.manual_seed(seed + trial)
+        train_loader, test_loader = load_dataset(batch_size=batch_size, standardize=standardize)
+        
+        start = time.time()
 
         if siamese:
             model = SiameseConvNet() if model == 'ConvNet' else SiameseMLP()
@@ -100,11 +108,15 @@ def run(model, siamese, epochs,
               verbose=verbose)
         # model.train(False) # TEST @lacoupe
         
-        testing_metrics.add_entry(model, test_loader, verbose)
+        end = time.time()
+        
+        testing_metrics.add_entry(model, test_loader, (end - start) / epochs, verbose)
         
     if make_figs:
         training_metrics.plot(timestamp)
         testing_metrics.plot(timestamp)
+        
+    testing_metrics.save()
         
     return training_metrics._average_accuracy(), testing_metrics._average_accuracy()
 
