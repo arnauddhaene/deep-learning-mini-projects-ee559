@@ -37,17 +37,17 @@ class SiameseMLP(SizeableModule, NamedModule, WeightInitializableModule):
         
     def forward_once(self, x: torch.tensor) -> torch.tensor:
         """
-        Forward pass function for the global siamese CNN
+        Forward pass function used in the sub-network
 
         Args:
-            x [float32]: input images with dimension Bx2x14x14 (for batch size B)
+            x [float32]: input image with dimension Bx1x14x14 (for batch size B)
 
         Returns:
-            [int]: predicted probability ]0,1[
-            [float32] : predicted classe by pair, size Bx2x10
+            [float32]: non activated tensor of dimension Bx1x10
         """
+
         # flatten image input
-        x = x.flatten(start_dim=1)  # (-1, 2x14x14)
+        x = x.flatten(start_dim=1)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)

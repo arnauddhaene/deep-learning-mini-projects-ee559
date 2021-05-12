@@ -4,17 +4,16 @@ from models.custom import SizeableModule, NamedModule, WeightInitializableModule
 
 
 class MLP(SizeableModule, NamedModule, WeightInitializableModule):
-    """Multi Layer Perceptron 
+    """Multi Layer Perceptron
 
     Attributes:
         fc1 (nn.Linear): First Fully connected linear layer (2*14*14) -> (128)
         fc2 (nn.Linear): Second Fully connected linear layer (128) -> (98)
         fc3 (nn.Linear): Third Fully connected linear layer (98) -> (49)
         fc4 (nn.Linear): Fourth [Fully connected linear layer (49) -> (10)
-        classifier (nn.classifier): 
-        drop (nn.drop):
-        sigmoid (nn.sigmoid)
-        relu (nn.sigmoid)
+        classifier (nn.classifier):Classifier (10) -> (1)
+        drop (nn.drop): Dropout with p=0.2
+        relu (nn.ReLU): ReLu activation function
     """
     
     def __init__(self):
@@ -27,18 +26,18 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         
         self.classifier = nn.Linear(10, 1)
         
-        # dropout layer
+        #  dropout layer
         self.drop = nn.Dropout(0.2)
         
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
-        
+  
         # Initialize weights
         self.apply(self.weights_init)
         
     def forward(self, x: torch.tensor) -> torch.tensor:
         """
-        Forward pass function for the global siamese CNN
+        Forward pass function for the global MLP
 
         Args:
             x [float32]: input images with dimension Bx2x14x14 (for batch size B)
@@ -48,7 +47,7 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
             [float32] : predicted classe by pair, size Bx2x10
         """
         # flatten image input
-        x = x.flatten(start_dim=1) #(-1, 2x14x14)
+        x = x.flatten(start_dim=1)
         # add hidden layer, with relu activation function
         x = self.relu(self.fc1(x))
         x = self.drop(x)
