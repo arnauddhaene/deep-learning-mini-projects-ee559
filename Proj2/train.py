@@ -2,13 +2,13 @@ from typing import Dict
 
 from torch import set_grad_enabled, Tensor
 
-from loss import MSELoss
-from optimizer import SGD
-from module import Module
+import flame
+from flame import nn
+from metrics import evaluate_accuracy
 
 
-def train(model: Module, train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 1e-2,
+def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
+          learning_rate: float = 5e-1,
           epochs: int = 50, batch_size: int = 25,
           verbose: int = 1) -> Dict:
     """
@@ -29,9 +29,9 @@ def train(model: Module, train_input: Tensor, train_target: Tensor,
     
     set_grad_enabled(False)
     
-    criterion = MSELoss()
+    criterion = nn.MSELoss()
     
-    optimizer = SGD(model, learning_rate, momentum=0.)
+    optimizer = flame.optim.SGD(model, learning_rate, momentum=0.)
     
     metrics = {}
     
@@ -53,13 +53,15 @@ def train(model: Module, train_input: Tensor, train_target: Tensor,
             
             model.backward(criterion.backward())
             optimizer.step()
+            
+        accuracy = evaluate_accuracy(model, train_input, train_target)
         
         metrics[epoch]['loss'] = loss
+        metrics[epoch]['accuracy'] = accuracy
         
         if verbose > 0 and (epoch + 1) % 5 == 0:
             print(f"Epoch {epoch + 1:02} \t"
-                  f"Loss {loss:04.3f} \t")
-    # TODO: add accuracy implementation
-    #   f"Accuracy {accuracy * 100:06.3f}")
+                  f"Loss {loss:04.3f} \t"
+                  f"Acc. {accuracy * 100:06.3f}")
                 
     return metrics

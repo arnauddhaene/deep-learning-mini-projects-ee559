@@ -1,5 +1,6 @@
-import torch
-from module import Module
+from torch import Tensor
+
+from flame.nn.module import Module
 
 
 class BatchNorm1D(Module):
@@ -7,9 +8,9 @@ class BatchNorm1D(Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, input: torch.tensor,
-                batch_size: int, mean_batch: torch.tensor,
-                var_batch: torch.tensor, gamma: float, beta: float):
+    def forward(self, input: Tensor,
+                batch_size: int, mean_batch: Tensor,
+                var_batch: Tensor, gamma: float, beta: float):
 
         eps = 1e-6
         self.input = input
@@ -30,18 +31,3 @@ class BatchNorm1D(Module):
         
         return grad.mul(1 / (self.var_batch + self.eps).sqrt()) + \
             2 / self.batch_size * Gv.mul(self.input - self.mean_batch) + 1 / self.batch_size * Gm
-
-
-class ReLU(Module):
-    
-    def __init__(self):
-        super().__init__()
-
-    def forward(self, input):
-    
-        self.input = input
-        return input.clamp(min=0)
-
-    def backward(self, grad):
-     
-        return grad.mul((self.input > 0).float())

@@ -2,8 +2,8 @@ from torch import Tensor
 
 from typing import List
 
-from module import Module
-from linear import Linear
+from .module import Module
+from .linear import Linear
 
 
 class Sequential(Module):

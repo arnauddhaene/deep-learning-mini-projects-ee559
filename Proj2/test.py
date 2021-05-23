@@ -1,24 +1,22 @@
 from torch import manual_seed
 
-from utils import load_dataset
-from activation import ReLU
-from linear import Linear
+from flame import nn
 from train import train
-from sequential import Sequential
 from metrics import evaluate_accuracy
+from utils import load_dataset
 
 
 # TODO: document and extend this function into trials, etc.
 def run():
     
-    manual_seed(27)
+    manual_seed(3)
     
     # Initialize model
-    model = Sequential([
-        Linear(2, 25), ReLU(),
-        Linear(25, 100), ReLU(),
-        Linear(100, 25), ReLU(),
-        Linear(25, 1)])
+    model = nn.Sequential([
+        nn.Linear(2, 25), nn.ReLU(),
+        nn.Linear(25, 100), nn.ReLU(),
+        nn.Linear(100, 25), nn.ReLU(),
+        nn.Linear(25, 1)])
     
     # Generate dataset
     train_input, train_target, \

@@ -3,7 +3,7 @@ from typing import List
 
 from torch import empty, Tensor
 
-from module import Module
+from .module import Module
 
 
 class Linear(Module):
