@@ -1,9 +1,10 @@
 import torch
 
+
 class Optimizer(object):
     """
     Optimization base class
-    The optimizer update the parameters after the gradient is calculated through backward propagation
+    The optimizer update the parameters after the gradient is calculated through back prop
     The parameters are then updated after each sample.
     """
     def step(self, *args):
@@ -19,9 +20,9 @@ class SGD(Optimizer):
     p[0] is the parameter, p[1] is the respective gradient
 
     Attributes:
-    parameters: parameter of the network model, obtained with model.param()
-    lr: learning rate
-    momentum: momentum coefficient 
+        parameters: parameter of the network model, obtained with model.param()
+        lr: learning rate
+        momentum: momentum coefficient
     """
     def __init__(self, parameters, lr, momentum=0):
     
@@ -46,5 +47,3 @@ class SGD(Optimizer):
         for i, p in enumerate(self.parameters):
             self.v[i] = self.momentum * self.v[i] + self.lr * p[1]
             p[0] = p[0] - self.v[i]
-
-

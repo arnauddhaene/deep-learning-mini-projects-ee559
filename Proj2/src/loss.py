@@ -6,7 +6,6 @@ class MSELoss(Module):
         super().__init__()
 
     def forward(self, input, target):
-
         self.input_ = input
         self.target = target
         return (input - target).pow(2).mean()
