@@ -103,7 +103,7 @@ def run(model, siamese, epochs,
             
         # model.train(True) # TEST @lacoupe
         train(model, train_loader,
-              learning_rate=lr, weight_decay=decay, gamma=.5,
+              learning_rate=lr, weight_decay=decay, gamma=gamma,
               epochs=epochs, metrics=training_metrics, run=trial,
               verbose=verbose)
         # model.train(False) # TEST @lacoupe

@@ -17,13 +17,17 @@ from test import run
 def tune_hyperparams(ctx: click.Context, model: str, siamese: bool = False,
                      outputfile: str = 'hyperparameters.csv', verbose: int = 0) -> None:
     
-    learning_rates = [1e-4, 5e-3, 1e-3, 5e-2, 1e-2]
-    weight_decays = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1]
+    learning_rates = [5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+    weight_decays = [1e-4, 1e-3, 1e-2, 1e-1]
     
     auxiliary_contributions = [0., 0.25, 0.5, 0.75, 1.] if siamese else [0.]
     
     if verbose > 0:
         print(f"Saving performance results in {outputfile}...")
+    
+    outputfile = model + outputfile
+    if siamese:
+        outputfile = "Siamese" + outputfile
     
     # Header in output file
     with open(outputfile, 'w+') as outfile:
@@ -40,7 +44,8 @@ def tune_hyperparams(ctx: click.Context, model: str, siamese: bool = False,
                 train_accuracy, test_accuracy = \
                     ctx.invoke(run, model=model, siamese=siamese, epochs=25,
                                lr=lr, decay=decay, gamma=gamma,
-                               trials=3, batch_size=50, standardize=True,
+                               trials=3, seed=123456,
+                               batch_size=50, standardize=True,
                                make_figs=False, clear_figs=False,
                                verbose=verbose)
                 

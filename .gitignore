@@ -130,8 +130,10 @@ dmypy.json
 
 # data files
 Proj1/data/
+Proj1 submission/data/
 Proj2/data/
 Proj1/src/data/
+Proj1 submission/src/data/
 Proj2/src/data/
 
 # figures
@@ -143,3 +145,5 @@ Proj1/figures/
 
 # DS Store
 .DS_Store
+
+*.csv
