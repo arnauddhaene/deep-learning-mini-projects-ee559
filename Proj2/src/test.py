@@ -6,6 +6,7 @@ from sequential import Sequential
 from metrics import evaluate_accuracy
 
 
+# TODO: document and extend this function into trials, etc.
 def run():
     
     # Initialize model
@@ -26,8 +27,8 @@ def run():
     
     model.eval()
     
-    print(evaluate_accuracy(model, test_input, test_target))
-    print(evaluate_accuracy(model, test_input, test_target))
+    print(f"Train accuracy: {evaluate_accuracy(model, train_input, train_target)}")
+    print(f"Test accuracy: {evaluate_accuracy(model, test_input, test_target)}")
     
     
 if __name__ == '__main__':

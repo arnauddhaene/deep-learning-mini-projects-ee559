@@ -4,6 +4,7 @@ from module import Module
 
 
 class MSELoss(Module):
+
     def __init__(self):
         super().__init__()
 
@@ -14,7 +15,8 @@ class MSELoss(Module):
         return (prediction - target).pow(2).mean()
 
     def backward(self):
-        return 2 * (self.prediction - self.target) / (self.prediction.shape[0])
+        grad = 2 * (self.prediction - self.target) / (self.prediction.shape[0])
+        return grad.unsqueeze(1)
 
     
 class CrossEntropyLoss(Module):

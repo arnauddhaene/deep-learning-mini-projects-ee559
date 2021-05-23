@@ -1,3 +1,5 @@
+from typing import Dict
+
 from torch import set_grad_enabled, Tensor
 
 from loss import MSELoss
@@ -5,11 +7,25 @@ from optimizer import SGD
 from module import Module
 
 
-def train(model: Module,
-          train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 1e-3,
-          epochs: int = 25, batch_size: int = 10,
-          verbose: int = 1) -> dict:
+def train(model: Module, train_input: Tensor, train_target: Tensor,
+          learning_rate: float = 1e-1,
+          epochs: int = 25, batch_size: int = 1000,
+          verbose: int = 1) -> Dict:
+    """
+    Train model
+
+    Args:
+        model (Module): model
+        train_input (Tensor): input data
+        train_target (Tensor): target classes
+        learning_rate (float, optional): Learning rate for optimizer. Defaults to 1e-1.
+        epochs (int, optional): Number of training epochs. Defaults to 25.
+        batch_size (int, optional): Wanted batch size for training. Defaults to 1000.
+        verbose (int, optional): Display intermediate information. Defaults to 1.
+
+    Returns:
+        Dict: metrics
+    """
     
     set_grad_enabled(False)
     
@@ -22,6 +38,8 @@ def train(model: Module,
     metrics = {}
     
     for epoch in range(epochs):
+        
+        metrics[epoch] = {}
         
         loss = 0.
         

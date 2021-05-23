@@ -1,10 +1,21 @@
+import math
 from typing import Tuple
 
 from torch import empty, Tensor
-import math
 
 
 def generate(samples: int) -> Tuple[Tensor, Tensor]:
+    """
+    Generate points sampled uniformly in [0, 1]^2 space
+    Each point is associated to a label 0 if outside the wanted disk and 1 if inside
+    The wanted disk is centered at (0.5, 0.5) and has radius 1 / √(2π)
+
+    Args:
+        samples (int): Number of sample points to generate
+
+    Returns:
+        Tuple[Tensor, Tensor]: points and their attributed labels
+    """
     
     data = empty(samples, 2).uniform_(0, 1)
     
@@ -14,6 +25,16 @@ def generate(samples: int) -> Tuple[Tensor, Tensor]:
 
 
 def load_dataset(samples: int, standardize: bool = True) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
+    """
+    Load the wanted dataset as explicited in the mini-project description
+
+    Args:
+        samples (int): Number of samples to generate in train and test sets.
+        standardize (bool, optional): standardize data w.r.t. to training set. Defaults to True.
+
+    Returns:
+        Tuple[Tensor, Tensor, Tensor, Tensor]: {train, test} {input, target}
+    """
     
     train_input, train_target = generate(samples)
     test_input, test_target = generate(samples)

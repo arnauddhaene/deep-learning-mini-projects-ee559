@@ -1,5 +1,6 @@
-from module import Module
 from torch import Tensor
+
+from module import Module
 
 
 def evaluate_accuracy(model: Module, in_: Tensor, target: Tensor) -> float:
@@ -17,4 +18,4 @@ def evaluate_accuracy(model: Module, in_: Tensor, target: Tensor) -> float:
     
     output = model(in_)
     
-    return (output == target).float().sum(1) / target.size(0)
+    return ((output > .5) == target).float().mean()

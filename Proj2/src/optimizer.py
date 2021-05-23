@@ -1,6 +1,3 @@
-import torch
-
-
 class Optimizer(object):
     """
     Optimization base class
@@ -20,7 +17,7 @@ class SGD(Optimizer):
     p[0] is the parameter, p[1] is the respective gradient
 
     Attributes:
-        parameters: parameter of the network model, obtained with model.param()
+        parameters: parameter of the network model, obtained with model.parameters()
         lr: learning rate
         momentum: momentum coefficient
     """
@@ -37,7 +34,7 @@ class SGD(Optimizer):
         """
         v = []
         for p in self.parameters:
-            v.append(torch.zeros_like(p[0]))
+            v.append(p[0].clone().fill_(0))
         return v
     
     def step(self):

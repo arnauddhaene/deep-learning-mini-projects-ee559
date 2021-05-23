@@ -23,12 +23,12 @@ class BatchNorm1D(Module):
         yb = gamma @ zb + beta
         return yb
 
-    def backward(self, G):
+    def backward(self, grad):
         Gv = - 0.5 * (self.var_batch + self.eps).pow(- 3 / 2)
-        Gv = Gv.mul((G @ (self.input - self.mean_batch)).sum())
-        Gm = - 1 / (self.var_batch + self.eps).sqrt() * G.sum()
+        Gv = Gv.mul((grad @ (self.input - self.mean_batch)).sum())
+        Gm = - 1 / (self.var_batch + self.eps).sqrt() * grad.sum()
         
-        return G.mul(1 / (self.var_batch + self.eps).sqrt()) + \
+        return grad.mul(1 / (self.var_batch + self.eps).sqrt()) + \
             2 / self.batch_size * Gv.mul(self.input - self.mean_batch) + 1 / self.batch_size * Gm
 
 
@@ -42,6 +42,6 @@ class ReLU(Module):
         self.input = input
         return input.clamp(min=0)
 
-    def backward(self, G):
+    def backward(self, grad):
      
-        return G.mul((self.input > 0).float())
+        return grad.mul((self.input > 0).float())

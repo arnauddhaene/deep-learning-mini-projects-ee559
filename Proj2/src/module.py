@@ -15,9 +15,9 @@ class Module(object):
         """
         raise NotImplementedError
 
-    def param(self):
+    def parameters(self):
         """
-        Returns a list of parameters and their resepctive gradient
+        Returns a list of parameters and their resepctive gradients
         """
         return []
     
