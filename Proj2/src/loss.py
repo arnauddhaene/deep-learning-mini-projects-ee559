@@ -8,7 +8,8 @@ class MSELoss(Module):
         super().__init__()
 
     def forward(self, prediction, target):
-        self.prediction = prediction
+        
+        self.prediction = prediction.view(-1)
         self.target = target
         return (prediction - target).pow(2).mean()
 

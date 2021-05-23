@@ -21,8 +21,6 @@ class Sequential(Module):
     
     def backward(self, grad: Tensor) -> Tensor:
         
-        print(grad)
-        
         for m in reversed(self.modules):
             grad = m.backward(grad)
         return grad
