@@ -20,3 +20,6 @@ class Module(object):
         Returns a list of parameters and their resepctive gradient
         """
         return []
+    
+    def __call__(self, *args):
+        return self.forward(*args)

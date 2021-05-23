@@ -24,9 +24,9 @@ class SGD(Optimizer):
         lr: learning rate
         momentum: momentum coefficient
     """
-    def __init__(self, parameters, lr, momentum=0):
+    def __init__(self, model, lr, momentum=0):
     
-        self.parameters = parameters
+        self.parameters = model.parameters()
         self.lr = lr
         self.momentum = momentum
         self.v = self.zero_velocity()
