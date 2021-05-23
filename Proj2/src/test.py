@@ -1,7 +1,7 @@
 from torch import manual_seed
 
 from utils import load_dataset
-from activation import ReLU, BatchNorm1D
+from activation import ReLU
 from linear import Linear
 from train import train
 from sequential import Sequential
