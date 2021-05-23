@@ -8,8 +8,8 @@ from module import Module
 
 
 def train(model: Module, train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 1e-1,
-          epochs: int = 25, batch_size: int = 1000,
+          learning_rate: float = 1e-2,
+          epochs: int = 50, batch_size: int = 25,
           verbose: int = 1) -> Dict:
     """
     Train model
@@ -33,11 +33,11 @@ def train(model: Module, train_input: Tensor, train_target: Tensor,
     
     optimizer = SGD(model, learning_rate, momentum=0.)
     
-    model.train()
-    
     metrics = {}
     
     for epoch in range(epochs):
+        
+        model.train()
         
         metrics[epoch] = {}
         
@@ -45,19 +45,20 @@ def train(model: Module, train_input: Tensor, train_target: Tensor,
         
         for batch in range(0, train_input.size(0), batch_size):
             
+            model.zero_grad()
+            
             prediction = model(train_input.narrow(0, batch, batch_size))
             
             loss += criterion(prediction, train_target.narrow(0, batch, batch_size))
             
-            model.zero_grad()
             model.backward(criterion.backward())
             optimizer.step()
         
         metrics[epoch]['loss'] = loss
         
-        if verbose > 0:
-            print(f"Epoch {epoch:02} \t"
-                  f"Loss {loss:07.3f} \t")
+        if verbose > 0 and (epoch + 1) % 5 == 0:
+            print(f"Epoch {epoch + 1:02} \t"
+                  f"Loss {loss:04.3f} \t")
     # TODO: add accuracy implementation
     #   f"Accuracy {accuracy * 100:06.3f}")
                 

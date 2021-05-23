@@ -1,5 +1,7 @@
+from torch import manual_seed
+
 from utils import load_dataset
-from activation import ReLU
+from activation import ReLU, BatchNorm1D
 from linear import Linear
 from train import train
 from sequential import Sequential
@@ -9,11 +11,13 @@ from metrics import evaluate_accuracy
 # TODO: document and extend this function into trials, etc.
 def run():
     
+    manual_seed(27)
+    
     # Initialize model
     model = Sequential([
         Linear(2, 25), ReLU(),
-        Linear(25, 25), ReLU(),
-        Linear(25, 25), ReLU(),
+        Linear(25, 100), ReLU(),
+        Linear(100, 25), ReLU(),
         Linear(25, 1)])
     
     # Generate dataset

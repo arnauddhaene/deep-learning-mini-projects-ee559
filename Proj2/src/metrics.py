@@ -16,6 +16,6 @@ def evaluate_accuracy(model: Module, in_: Tensor, target: Tensor) -> float:
     
     model.eval()
     
-    output = model(in_)
+    output = model(in_).flatten()
     
     return ((output > .5) == target).float().mean()
