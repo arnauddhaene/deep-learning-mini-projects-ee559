@@ -8,8 +8,8 @@ from metrics import evaluate_accuracy
 
 
 def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 5e-1,
-          epochs: int = 50, batch_size: int = 25,
+          learning_rate: float = 1e-2,
+          epochs: int = 50, batch_size: int = 50,
           verbose: int = 1) -> Dict:
     """
     Train model
@@ -31,7 +31,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
     
     criterion = nn.MSELoss()
     
-    optimizer = flame.optim.SGD(model, learning_rate, momentum=0.)
+    optimizer = flame.optim.SGD(model, learning_rate)
     
     metrics = {}
     
