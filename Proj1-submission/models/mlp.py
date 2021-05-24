@@ -12,14 +12,15 @@ class MLP(SizeableModule, NamedModule, WeightInitializableModule):
         fc2 (nn.Linear): Second fully connected layer with dimension  128 -> 98
         fc3 (nn.Linear): Third fully connected layer with dimension 98 -> 49
         fc4 (nn.Linear): Fourth fully connected layer with dimension 49 -> 98
-        classifier (nn.Linear): final classifier, fully connected linear layer with dimensions 10 -> 1
-        drop (nn.Dropout): Dropout function 
-        relu: Relu activation function 
-        sigmoid: Sigmoid activation function
+        classifier (nn.Linear): final classifier, fully connected linear
+                                layer with dimensions 10 -> 1
+        drop (nn.Dropout): Dropout function
+        relu (nn.ReLU): Relu activation function
+        sigmoid (nn.Sidgmoid): Sigmoid activation function
     """
     
     def __init__(self):
-    """ Initialisation """
+        """ Initialisation """
 
         super(MLP, self).__init__()
         self.fc1 = nn.Linear(2 * 14 * 14, 128)
