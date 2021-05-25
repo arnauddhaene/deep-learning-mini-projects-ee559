@@ -2,12 +2,12 @@ from torch import Tensor
 from .module import Module
 
 
-class MSELoss(Module):
+class LossMSE(Module):
     """
         Mean Square Error (MSE) Loss
     """
     def __init__(self):
-        super(MSELoss).__init__()
+        super(LossMSE).__init__()
 
     def forward(self, prediction: Tensor, target: Tensor) -> float:
         """

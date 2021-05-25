@@ -29,7 +29,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
     
     set_grad_enabled(False)
     
-    criterion = nn.MSELoss()
+    criterion = nn.LossMSE()
     
     optimizer = flame.optim.Adagrad(model, learning_rate)
     

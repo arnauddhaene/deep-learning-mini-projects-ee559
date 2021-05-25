@@ -27,4 +27,4 @@ class Tanh(Module):
         """
         Backward pass: backpropagation of the gradient of the  activation function
         """
-        return grad.mul(1-self.input.tanh().pow(2))
+        return grad.mul(1 - self.input.tanh().pow(2))
