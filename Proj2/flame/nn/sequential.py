@@ -1,7 +1,7 @@
 from torch import Tensor
 
 from typing import List
-
+from .dropout import Dropout
 from .module import Module
 from .linear import Linear
 
@@ -74,15 +74,17 @@ class Sequential(Module):
         return parameters
     
     def train(self):
-        pass
-        # TODO: implement
-        # for m in self.modules:
-        #     if isinstance(m, InvertedDropout):
-        #         m.eval = False
+        """
+        Set's eval to false for the dropout regularization layer to be active
+        """
+        for m in self.modules:
+            if isinstance(m, Dropout):
+                m.train = False
 
-    def eval(self):
-        pass
-        # TODO: implement
-        # for m in self.modules:
-        #     if isinstance(m, InvertedDropout):
-        #         m.eval = True
+    def test(self):
+        """
+        Set's eval to false for the dropout regularization layer to be inactive
+        """
+        for m in self.modules:
+            if isinstance(m, Dropout):
+                m.train = True

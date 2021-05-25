@@ -14,7 +14,7 @@ def evaluate_accuracy(model: nn.Module, in_: Tensor, target: Tensor) -> float:
         float: classification accuracy
     """
     
-    model.eval()
+    model.test()
     
     output = model(in_).flatten()
     
