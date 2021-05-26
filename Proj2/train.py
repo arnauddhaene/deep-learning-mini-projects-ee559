@@ -7,7 +7,7 @@ from metrics import evaluate_accuracy
 
 
 def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 1e-3, epochs: int = 50, batch_size: int = 50,
+          learning_rate: float = 1e-3, epochs: int = 50, batch_size: int = 10,
           metrics: list = [], trial: int = 0, optim: str = 'Adam', crit: str = 'MSE',
           verbose: int = 0) -> None:
     """
@@ -32,7 +32,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
     if crit == 'MSE':
         criterion = nn.LossMSE()
     elif crit == 'CrossEntropy':
-        criterion = nn.CrossEntropyLoss()
+        criterion = nn.LossCrossEntropy()
     else:
         raise(f'Loss criterion {crit} not implemented.')
     
@@ -57,7 +57,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
             
             prediction = model(train_input.narrow(0, batch, batch_size))
             
-            loss = criterion(prediction.flatten(), 
+            loss = criterion(prediction.flatten(),
                              train_target.narrow(0, batch, batch_size).float())
             
             acc_loss += loss.item()
@@ -68,7 +68,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
         accuracy = evaluate_accuracy(model, train_input, train_target)
         
         metrics.append({
-            'loss': loss.item(),
+            'loss': acc_loss,
             'accuracy': accuracy.item(),
             'epoch': epoch,
             'trial': trial,
@@ -80,5 +80,5 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
         
         if verbose > 0 and (epoch + 1) % 5 == 0:
             print(f"Epoch {epoch + 1:02} \t"
-                  f"Loss {loss:04.3f} \t"
+                  f"Loss {acc_loss:04.3f} \t"
                   f"Acc. {accuracy * 100:06.3f}")

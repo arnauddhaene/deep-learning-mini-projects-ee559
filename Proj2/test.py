@@ -16,7 +16,7 @@ def train_once(model: nn.Module, trial: int = 0, **kwargs) -> None:
     
     # Generate dataset
     train_input, train_target, \
-        test_input, test_target = load_dataset(1000, standardize=True)
+        test_input, test_target, _, _ = load_dataset(1000, standardize=True)
     
     # Perform weight initialization
     model.init_weights()
@@ -41,6 +41,9 @@ def run() -> None:
         dict(optim='SGD', crit='MSE', learning_rate=1e-1),
         dict(optim='Adam', crit='MSE', learning_rate=1e-3),
         dict(optim='Adagrad', crit='MSE', learning_rate=1e-3),
+        # dict(optim='SGD', crit='CrossEntropy', learning_rate=1e-1),
+        # dict(optim='Adam', crit='CrossEntropy', learning_rate=1e-3),
+        # dict(optim='Adagrad', crit='CrossEntropy', learning_rate=1e-3),
     ]
     
     for config in model_configs:
@@ -52,7 +55,7 @@ def run() -> None:
             nn.Linear(25, 25), nn.ReLU(),
             nn.Linear(25, 1)])
         
-        for trial in range(15):
+        for trial in range(1):
             train_once(model, trial, metrics=trial_metrics, **config, verbose=0)
 
     with open('results/metrics.json', 'w') as outfile:
