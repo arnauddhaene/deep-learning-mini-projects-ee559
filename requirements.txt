@@ -1,8 +1,0 @@
-click
-flake8
-matplotlib
-numpy
-pandas
-seaborn
-torch
-torchvision

@@ -2,7 +2,15 @@
 
 ###### EE-559 Deep Learning (EPFL), spring 2021
 
-## Introduction
+## Running `Proj2`
+
+As enforced in the project description, you can train and test our best performing model using
+
+```bash
+python test.py
+```
+
+We have built a python package called `flame` that uses a very familiar structure. We `from torch import Tensor` only for type hints, as allowed by the TAs in a Slack message.
 
 ## Authors
 

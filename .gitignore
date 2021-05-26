@@ -130,11 +130,15 @@ dmypy.json
 
 # data files
 Proj1/data/
-Proj1 submission/data/
+Proj1/results/
+Proj1-extended/data/
 Proj2/data/
 Proj1/src/data/
-Proj1 submission/src/data/
+Proj1-extended/src/data/
+Proj1-extended/results/
+Proj1-extended/figures/
 Proj2/src/data/
+Proj2/results/
 
 # figures
 Proj1/figures/
