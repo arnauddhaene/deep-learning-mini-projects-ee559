@@ -1,5 +1,5 @@
 
-from .cross_entropy import CrossEntropyLoss
+from .cross_entropy import LossCrossEntropy
 from .linear import Linear
 from .module import Module
 from .mse import LossMSE

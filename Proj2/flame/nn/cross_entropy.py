@@ -1,9 +1,8 @@
 from torch import Tensor
-
 from .module import Module
 
 
-class CrossEntropyLoss(Module):
+class LossCrossEntropy(Module):
     """
     Cross Entropy Loss
     """
@@ -18,13 +17,16 @@ class CrossEntropyLoss(Module):
         Returns:
         Cross entropy loss (torch.tensor)
         """
-        self.softmax_input = prediction.exp() / (prediction.exp().sum(1).repeat(2, 1).t())
+        prediction = prediction.view(-1)
         self.target = target
+        self.softmax_input = prediction.exp() / prediction.exp().sum()
+        loss = - self.target.mul(self.softmax_input.log()).mean()
 
-        return - self.target.mul(self.softmax_input.log()).sum(1).mean()
+        return loss
 
-    def backward(self):
+    def backward(self) -> Tensor:
         """
         Back Propagation: back ward pass of the derivative of the cross entropy function
         """
-        return - (self.target - self.softmax_input)
+        grad = self.softmax_input - self.target
+        return grad.unsqueeze(1)

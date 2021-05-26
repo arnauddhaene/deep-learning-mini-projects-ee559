@@ -14,7 +14,7 @@ def run():
     # Initialize model
     model = nn.Sequential([
         nn.Linear(2, 25), nn.ReLU(),
-        nn.Linear(25, 100), nn.Dropout(p=0.3), nn.ReLU(),
+        nn.Linear(25, 100), nn.ReLU(),
         nn.Linear(100, 25), nn.ReLU(),
         nn.Linear(25, 1)])
     

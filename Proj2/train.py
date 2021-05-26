@@ -29,7 +29,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
     
     set_grad_enabled(False)
     
-    criterion = nn.LossMSE()
+    criterion = nn.LossCrossEntropy()
     
     optimizer = flame.optim.Adagrad(model, learning_rate)
     
@@ -49,7 +49,8 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
             
             prediction = model(train_input.narrow(0, batch, batch_size))
             
-            loss += criterion(prediction, train_target.narrow(0, batch, batch_size))
+            loss = criterion(prediction.flatten(),
+                             train_target.narrow(0, batch, batch_size).float())
             
             model.backward(criterion.backward())
             optimizer.step()
