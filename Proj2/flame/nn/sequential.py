@@ -73,18 +73,10 @@ class Sequential(Module):
                 
         return parameters
     
-    def train(self):
+    def train(self, mode: bool = True):
         """
         Set's eval to false for the dropout regularization layer to be active
         """
         for m in self.modules:
             if isinstance(m, Dropout):
-                m.train = False
-
-    def test(self):
-        """
-        Set's eval to false for the dropout regularization layer to be inactive
-        """
-        for m in self.modules:
-            if isinstance(m, Dropout):
-                m.train = True
+                m.train = mode

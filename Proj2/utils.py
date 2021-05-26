@@ -24,7 +24,9 @@ def generate(samples: int) -> Tuple[Tensor, Tensor]:
     return data, target
 
 
-def load_dataset(samples: int, standardize: bool = True) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
+def load_dataset(
+    samples: int, standardize: bool = True
+) -> Tuple[Tensor, Tensor, Tensor, Tensor, float, float]:
     """
     Load the wanted dataset as explicited in the mini-project description
 
@@ -33,7 +35,7 @@ def load_dataset(samples: int, standardize: bool = True) -> Tuple[Tensor, Tensor
         standardize (bool, optional): standardize data w.r.t. to training set. Defaults to True.
 
     Returns:
-        Tuple[Tensor, Tensor, Tensor, Tensor]: {train, test} {input, target}
+        Tuple[Tensor, Tensor, Tensor, Tensor, float, float]: {train, test} {input, target}, mu, sig
     """
     
     train_input, train_target = generate(samples)
@@ -46,7 +48,7 @@ def load_dataset(samples: int, standardize: bool = True) -> Tuple[Tensor, Tensor
         train_input = standardized(train_input, mu, sigma)
         test_input = standardized(test_input, mu, sigma)
         
-    return train_input, train_target, test_input, test_target
+    return train_input, train_target, test_input, test_target, mu, sigma
         
         
 def standardized(t: Tensor, mean: Tensor, std: Tensor) -> Tensor:

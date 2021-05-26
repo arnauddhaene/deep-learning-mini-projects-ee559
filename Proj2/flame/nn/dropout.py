@@ -13,14 +13,14 @@ class Dropout(Module):
 
     def __init__(self, p: float = 0.5):
         super().__init__()
-        self.test = False
+        self.train = True
         self.p = p
 
     def forward(self, input):
         """
         Forward pass, set's random weights to zero with a probabity p
         """
-        if self.test:
+        if not self.train:
             return input
         
         self.drop = torch.rand(input.shape) > self.p
