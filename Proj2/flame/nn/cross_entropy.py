@@ -20,7 +20,8 @@ class LossCrossEntropy(Module):
         prediction = prediction.view(-1)
         self.target = target
         self.softmax_input = prediction.exp() / prediction.exp().sum()
-        loss = - self.target.mul(self.softmax_input.log()).mean()
+        loss = -self.target.mul(self.softmax_input.log())
+        loss += (1 - self.target).mul((1 - self.softmax_intput).log()).mean()
 
         return loss
 
@@ -28,5 +29,8 @@ class LossCrossEntropy(Module):
         """
         Back Propagation: back ward pass of the derivative of the cross entropy function
         """
-        grad = self.softmax_input - self.target
+        
+        grad = -self.softmax_input.div(self.target)
+        grad += (1 - self.softmax_input).div(1 - self.target)
+
         return grad.unsqueeze(1)
