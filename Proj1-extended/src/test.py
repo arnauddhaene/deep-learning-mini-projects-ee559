@@ -19,11 +19,11 @@ from utils import load_dataset
 @click.option('--model', default='ConvNet',
               type=click.Choice(['ConvNet', 'MLP'], case_sensitive=False),
               help="Model to evaluate.")
-@click.option('--siamese/--no-siamese', default=False, type=bool,
+@click.option('--siamese/--no-siamese', default=True, type=bool,
               help="Use a siamese version of the model.")
 @click.option('--epochs', default=25,
               help="Number of training epochs.")
-@click.option('--lr', default=1e-2,
+@click.option('--lr', default=5e-3,
               help="Learning rate.")
 @click.option('--decay', default=1e-3,
               help="Optimizer weight decay.")
@@ -37,36 +37,16 @@ from utils import load_dataset
               help="Batch size for training.")
 @click.option('--standardize/--dont-standardize', default=True, type=bool,
               help="Standardize train and test data with train data statistics.")
-@click.option('--make-figs/--no-figs', default=True, type=bool,
+@click.option('--make-figs/--no-figs', default=False, type=bool,
               help="Create figures for the trial.")
 @click.option('--clear-figs/--keep-figs', default=False, type=bool,
               help="Clear the figures directory of all its contents.")
-@click.option('--verbose', default=1, type=int,
+@click.option('--verbose', default=2, type=int,
               help="Print out info for debugging purposes.")
 def run(model, siamese, epochs,
         lr, decay, gamma, trials, seed,
         batch_size, standardize,
         make_figs, clear_figs, verbose):
-    """[summary]
-
-    Args:
-        model ([type]): [description]
-        siamese ([type]): [description]
-        epochs ([type]): [description]
-        lr ([type]): [description]
-        decay ([type]): [description]
-        gamma ([type]): [description]
-        trials ([type]): [description]
-        batch_size ([type]): [description]
-        standardize ([type]): [description]
-        make_figs ([type]): [description]
-        clear_figs ([type]): [description]
-        verbose ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
-    
     # Clear figures directory
     if clear_figs:
         if verbose > 0:
@@ -101,12 +81,10 @@ def run(model, siamese, epochs,
         if verbose > 1:
             print(f"{model} instanciated with {model.param_count()} parameters.")
             
-        # model.train(True) # TEST @lacoupe
         train(model, train_loader,
               learning_rate=lr, weight_decay=decay, gamma=gamma,
               epochs=epochs, metrics=training_metrics, run=trial,
               verbose=verbose)
-        # model.train(False) # TEST @lacoupe
         
         end = time.time()
         

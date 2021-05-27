@@ -64,9 +64,10 @@ def run(model: nn.Module, siamese: bool = False, epochs: int = 25,
         if verbose > 1:
             print("Evaluating performance on test set...")
         testing_metrics.add_entry(model, test_loader, (end - start) / epochs, verbose)
-        
-    training_metrics.save(filename + "_training_metrics.csv")
-    testing_metrics.save(filename + "_testing_metrics.csv")
+    
+    # Used to save the metrics in .csv files
+    # training_metrics.save('results/' + filename + "_training_metrics.csv")
+    # testing_metrics.save('results/' + filename + "_testing_metrics.csv")
 
 
 def run_all():
@@ -83,6 +84,7 @@ def run_all():
     #     trials=15, seed=27, batch_size=50, standardize=True,
     #     filename="ConvNet", verbose=1)
     
+    # Our most performing model
     run("ConvNet", siamese=True, epochs=25, lr=5e-3, decay=1e-3, gamma=0.5,
         trials=1, seed=27, batch_size=50, standardize=True,
         filename="SiameseConvNet", verbose=2)
