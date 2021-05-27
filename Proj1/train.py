@@ -39,7 +39,6 @@ def train(
         
         acc_loss = 0.
 
-        # model.train(True) # TEST @lacoupe
         model.train()
         
         for input, target, classes in train_loader:
