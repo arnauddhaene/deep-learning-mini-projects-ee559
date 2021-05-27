@@ -138,7 +138,6 @@ class TestMetric():
         with torch.no_grad():
             for (input, target, _) in self.loader:
 
-                # self.model = self.model.train(False) # TEST @lacoupe
                 output, _ = self.model(input)
                 
                 output = (output >= 0.5)
