@@ -1,15 +1,16 @@
 from torch import Tensor
 from .module import Module
 
+
 class BCELoss(Module):
     """
-    Binary Cross Entropy Loss 
+    Binary Cross Entropy Loss
     """
   
     def forward(self, prediction: Tensor, target: Tensor) -> Tensor:
         """
         Forward pass:
-        
+
         Arguments
         Prediction (torch.Tensor): Predicted output of the network
         Target (torch.Tensor): Target of the network
@@ -21,7 +22,7 @@ class BCELoss(Module):
         self.target = target
 
         # Compute sigmoid of the predicted value to obtain a probabiity
-        self.sigmoid_pred=self.sigmoid()
+        self.sigmoid_pred = self.sigmoid()
 
         # Computing the BCEloss
         loss = target.mul(self.sigmoid_pred.log())

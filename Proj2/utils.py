@@ -48,10 +48,9 @@ def load_dataset(
         train_input = standardized(train_input, mu, sigma)
         test_input = standardized(test_input, mu, sigma)
         return train_input, train_target, test_input, test_target, mu, sigma
-    else: 
+    else:
         return train_input, train_target, test_input, test_target
 
-        
         
 def standardized(t: Tensor, mean: Tensor, std: Tensor) -> Tensor:
     """
