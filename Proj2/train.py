@@ -32,7 +32,7 @@ def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
     if crit == 'MSE':
         criterion = nn.LossMSE()
     elif crit == 'CrossEntropy':
-        criterion = nn.LossCrossEntropy()
+        criterion = nn.BCELoss()
     else:
         raise(f'Loss criterion {crit} not implemented.')
     
