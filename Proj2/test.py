@@ -1,7 +1,5 @@
 # import json
 
-from torch import manual_seed
-
 from flame import nn
 
 from train import train
@@ -10,10 +8,7 @@ from utils import load_dataset
 
 
 def train_once(model: nn.Module, trial: int = 0, metrics: list = [], **kwargs) -> None:
-    
-    # Initialize model
-    manual_seed(trial)
-    
+        
     # Generate dataset
     train_input, train_target, \
         test_input, test_target, _, _ = load_dataset(1000, standardize=True)
@@ -40,12 +35,12 @@ def run() -> None:
     
     # Uncomment wanted model configurations to run them as well
     model_configs = [
-        dict(optim='SGD', crit='MSE', learning_rate=1e-1),
+        # dict(optim='SGD', crit='MSE', learning_rate=1e-1),
         dict(optim='Adam', crit='MSE', learning_rate=1e-3),
-        dict(optim='Adagrad', crit='MSE', learning_rate=1e-3),
-        # dict(optim='SGD', crit='CrossEntropy', learning_rate=1e-1),
+        # dict(optim='Adagrad', crit='MSE', learning_rate=1e-3),
+        # dict(optim='SGD', crit='CrossEntropy', learning_rate=1e-3),
         # dict(optim='Adam', crit='CrossEntropy', learning_rate=1e-3),
-        # dict(optim='Adagrad', crit='CrossEntropy', learning_rate=1e-3),
+        # dict(optim='Adagrad', crit='CrossEntropy', learning_rate=5e-4),
     ]
     
     for config in model_configs:
@@ -57,10 +52,10 @@ def run() -> None:
             nn.Linear(25, 25), nn.ReLU(),
             nn.Linear(25, 1)])
         
-        for trial in range(15):
-            train_once(model, trial, metrics=trial_metrics, **config, verbose=0)
+        for trial in range(1):
+            train_once(model, trial, metrics=trial_metrics, **config, verbose=1)
 
-    # Used to save metrics
+    # Used to save tracked metrics
     # with open('results/metrics.json', 'w') as outfile:
     #     json.dump(trial_metrics, outfile)
     

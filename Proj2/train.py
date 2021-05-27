@@ -7,7 +7,7 @@ from metrics import evaluate_accuracy
 
 
 def train(model: nn.Module, train_input: Tensor, train_target: Tensor,
-          learning_rate: float = 1e-3, epochs: int = 50, batch_size: int = 10,
+          learning_rate: float = 1e-3, epochs: int = 50, batch_size: int = 50,
           metrics: list = [], trial: int = 0, optim: str = 'Adam', crit: str = 'MSE',
           verbose: int = 0) -> None:
     """
