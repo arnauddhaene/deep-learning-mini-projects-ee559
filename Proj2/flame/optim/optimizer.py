@@ -1,10 +1,9 @@
 class Optimizer(object):
     """
     Optimization base class
-    The optimizer update the parameters after the gradient is calculated through back prop
-    The parameters are then updated after each sample.
+    Once the gradient is calculated through back propagation, the parameters are updated.
     """
-    def step(self, *args):
+    def step(self, *args) -> None:
         """
         Gradient Descent parameter update
         """

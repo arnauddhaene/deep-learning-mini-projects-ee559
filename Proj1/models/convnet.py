@@ -22,7 +22,7 @@ class ConvNet(SizeableModule, NamedModule, WeightInitializableModule):
         sigmoid (nn.Sigmoid)  : sigmoid activation function
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize Convolutional Neural Network"""
         super().__init__()
     
