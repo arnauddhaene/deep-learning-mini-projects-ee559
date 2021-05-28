@@ -7,4 +7,5 @@ from .relu import ReLU
 from .tanh import Tanh
 from .sequential import Sequential
 from .dropout import Dropout
+from .sigmoid import Sigmoid
 
