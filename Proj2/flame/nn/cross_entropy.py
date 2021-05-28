@@ -1,7 +1,6 @@
 from torch import Tensor
 from .module import Module
 
-
 class BCELoss(Module):
     """
     Binary Cross Entropy Loss
@@ -20,6 +19,9 @@ class BCELoss(Module):
         """
         self.prediction = prediction.view(-1)
         self.target = target
+
+        if (prediction < 0).any():
+            raise Exception('Error: Binary Cross Entropy Loss takes positive values')
 
         # Compute sigmoid of the predicted value to obtain a probabiity
         # self.sigmoid_pred = self.sigmoid()
