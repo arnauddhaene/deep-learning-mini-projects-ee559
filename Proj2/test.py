@@ -50,7 +50,7 @@ def run() -> None:
             nn.Linear(2, 25), nn.ReLU(),
             nn.Linear(25, 25), nn.Dropout(p=0.1), nn.ReLU(),
             nn.Linear(25, 25), nn.ReLU(),
-            nn.Linear(25, 1)])
+            nn.Linear(25, 1), nn.Sigmoid()])
         
         for trial in range(1):
             train_once(model, trial, metrics=trial_metrics, **config, verbose=1)
