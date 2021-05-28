@@ -1,4 +1,7 @@
 from .optimizer import Optimizer
+from typing import Tuple
+from torch import Tensor
+from flame import nn
 
 
 class Adam(Optimizer):
@@ -11,7 +14,8 @@ class Adam(Optimizer):
         betas: hyper-parameter used for computing moving averages of gradient and its square
         eps: term added to the denominator to improve numerical stability
     """
-    def __init__(self, model, lr, betas=(0.9, 0.999), eps=1e-8):
+    def __init__(self, model: nn.Module, lr: float,
+                 betas: Tuple[float, float] = (0.9, 0.999), eps: float = 1e-8) -> None:
     
         self.model = model
         self.lr = lr
@@ -20,16 +24,16 @@ class Adam(Optimizer):
         self.m = self.initialize()
         self.v = self.initialize()
         
-    def initialize(self):
+    def initialize(self) -> Tensor:
         """
-        Initialize the moving average vectors as zeros according to parameter shapes
+        Initialize the moving average vectors as zeros according to parameters' shapes
         """
         x = []
         for p in self.model.parameters():
             x.append(p[0].clone().fill_(0))
         return x
     
-    def step(self):
+    def step(self) -> None:
         """
         Performs a single optimization step, following ADAM algorithm
         """
