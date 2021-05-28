@@ -24,9 +24,6 @@ class BCELoss(Module):
         if (prediction < 0).any():
             raise Exception('Error: Binary Cross Entropy Loss takes positive values')
 
-        # Compute sigmoid of the predicted value to obtain a probabiity
-        # self.sigmoid_pred = self.sigmoid()
-
         # Computing the BCEloss
         loss = target.mul(self.prediction.log())
         loss += (1 - self.target).mul((1 - self.prediction).log())
@@ -37,11 +34,6 @@ class BCELoss(Module):
         """
         Back Propagation: back ward pass of the derivative of the cross entropy function
         """
-
-        # if (self.sigmoid_pred.mean() < 1e-6) or (self.sigmoid_pred.mean() > 1 - 1e-6):
-        # Safeguard to prevent gradient to explode
-        # grad = 0
-        # else:
         grad = self.target.div(self.prediction)
         grad -= (1 - self.target).div(1 - self.prediction)
 
