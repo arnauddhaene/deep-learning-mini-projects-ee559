@@ -34,9 +34,12 @@ class BCELoss(Module):
         """
         Back Propagation: back ward pass of the derivative of the cross entropy function
         """
-        
-        grad = self.target.div(self.sigmoid_pred)
-        grad -= (1 - self.target).div(1 - self.sigmoid_pred)
+
+        if (self.sigmoid_pred.mean() < 1e-6) or (self.sigmoid_pred.mean() > 1 - 1e-6):
+            grad = 0
+        else:
+            grad = self.target.div(self.sigmoid_pred)
+            grad -= (1 - self.target).div(1 - self.sigmoid_pred)
 
         return self.d_sigmoid().mul(-grad).unsqueeze(1)
     
