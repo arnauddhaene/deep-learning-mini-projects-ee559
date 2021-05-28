@@ -36,9 +36,9 @@ class BCELoss(Module):
         """
 
         # if (self.sigmoid_pred.mean() < 1e-6) or (self.sigmoid_pred.mean() > 1 - 1e-6):
-            # Safeguard to prevent gradient to explode 
-        #    grad = 0
-        #  else:
+        # Safeguard to prevent gradient to explode
+        # grad = 0
+        # else:
         grad = self.target.div(self.prediction)
         grad -= (1 - self.target).div(1 - self.prediction)
 

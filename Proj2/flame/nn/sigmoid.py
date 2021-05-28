@@ -13,7 +13,7 @@ class Sigmoid(Module):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-        Forward pass: 
+        Forward pass:
 
         Arguments:
         input (torch.Tensor): Input tensor
@@ -30,5 +30,5 @@ class Sigmoid(Module):
         """
         Backward pass: backpropagation of the gradient of the  activation function
         """
-        d_sigmoid=self.forward(self.input).mul(1 - self.forward(self.input))
+        d_sigmoid = self.forward(self.input).mul(1 - self.forward(self.input))
         return grad.mul(d_sigmoid)

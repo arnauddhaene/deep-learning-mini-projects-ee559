@@ -38,9 +38,9 @@ def run() -> None:
         # dict(optim='SGD', crit='MSE', learning_rate=1e-1),
         # dict(optim='Adam', crit='MSE', learning_rate=1e-3),
         # dict(optim='Adagrad', crit='MSE', learning_rate=1e-3),
-         dict(optim='SGD', crit='CrossEntropy', learning_rate=1e-3),
-         dict(optim='Adam', crit='CrossEntropy', learning_rate=1e-3),
-         dict(optim='Adagrad', crit='CrossEntropy', learning_rate=5e-4),
+        dict(optim='SGD', crit='CrossEntropy', learning_rate=1e-3),
+        dict(optim='Adam', crit='CrossEntropy', learning_rate=1e-3),
+        dict(optim='Adagrad', crit='CrossEntropy', learning_rate=5e-4),
     ]
     
     for config in model_configs:
